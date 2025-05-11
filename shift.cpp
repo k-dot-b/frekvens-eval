@@ -1,10 +1,10 @@
 #include "shift.h"
 
-void refresh(uint8_t frm[ROWC][COLC], uint8_t latch_pin_n, uint8_t oe_pin_n){
+void refresh(uint8_t frm[ROWC][COLC], uint8_t latch, uint8_t enable){
 	if (!(frm&&*frm))
 		return;
 	
-  //digitalWrite(oe_pin_n, HIGH);
+  digitalWrite(enable, HIGH);
   SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 
 	//Last value first
@@ -18,8 +18,8 @@ void refresh(uint8_t frm[ROWC][COLC], uint8_t latch_pin_n, uint8_t oe_pin_n){
 		Serial.println();
 	}
   SPI.endTransaction();
-  digitalWrite(latch_pin_n, LOW);
+  digitalWrite(latch, HIGH);
   NOP;
-  digitalWrite(latch_pin_n, HIGH);
-  //digitalWrite(oe_pin_n, LOW);
+  digitalWrite(latch, LOW);
+  digitalWrite(enable, LOW);
 }
