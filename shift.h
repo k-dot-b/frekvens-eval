@@ -8,9 +8,9 @@
 #include "utils.h"
 
 //SPISettings parameters
-#define SRSPEED 31250       //speedMaximum
+#define SRSPEED 125000      //speedMaximum
 #define SRORDER LSBFIRST    //dataOrder
-#define SRMODE SPI_MODE1    //dataMode
+#define SRMODE SPI_MODE0    //dataMode
 
 //declarations
 void refresh(uint8_t frame[ROWC][COLC], uint8_t latch_pin_n, uint8_t oe_pin_n);

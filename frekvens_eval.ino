@@ -70,7 +70,7 @@ void fgen_cluster_stepper(uint8_t frm[ROWC][COLC], int px){
   for(int i=0;i<ROWC;i++){
     for(int j=0;j<COLC;j++){
       if (cnt==px){
-        frm[i][j]=0xff;
+        frm[i][j]=0x55;
       }
       else
         frm[i][j]=0;
