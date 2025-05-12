@@ -49,14 +49,24 @@ void setup() {
 void loop() {
   
   //test routine: cluster stepper
-  Serial.println("Frame:");
   fgen_cluster_stepper(g_frame, cluster);
+
+  Serial.println("Frame:");
+	for(int i=0;i<ROWC;i++){
+		for(int j=0;j<COLC;j++){
+		Serial.print(g_frame[i][j]);
+		Serial.print("		");
+		}
+		Serial.println();
+	}
+
   refresh(g_frame, LATCH_PIN, OE_PIN);
-  if (cluster<32)
+
+  if (cluster<31)
     cluster++;
   else
     cluster=0;
-  delay(500);
+  delay(1000);
   //end test routine
 }
 
@@ -74,7 +84,7 @@ void fgen_cluster_stepper(uint8_t frm[ROWC][COLC], int px){
       }
       else
         frm[i][j]=0;
-      if (cnt<32)
+      if (cnt<31)
         cnt++;
       else
         cnt=0;

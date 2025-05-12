@@ -4,22 +4,21 @@ void refresh(uint8_t frm[ROWC][COLC], uint8_t latch, uint8_t enable){
 	if (!(frm&&*frm))
 		return;
 	
-  digitalWrite(enable, HIGH);
-  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
+  digitalWrite(enable, HIGH);	//blank display
 
+  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int i=ROWC;i>0;i--){
-		for(int j=COLC;j>0;j--){
-		Serial.print(frm[i-1][j-1]);
-		Serial.print("		");
+	for(int j=COLC;j>0;j--){
+		for(int i=ROWC;i>0;i--){
     int received = SPI.transfer(frm[i-1][j-1]);
 		}
-		Serial.println();
 	}
   SPI.endTransaction();
-  digitalWrite(latch, HIGH);
+
+  digitalWrite(latch, HIGH);	//latch new values
   NOP;
   digitalWrite(latch, LOW);
-  digitalWrite(enable, LOW);
+
+  digitalWrite(enable, LOW);	//enable display
 }
