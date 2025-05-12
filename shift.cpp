@@ -1,6 +1,6 @@
 #include "shift.h"
 
-void refresh(uint8_t frm[ROWC][COLC], uint8_t latch, uint8_t enable){
+void refresh(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frm&&*frm))
 		return;
 	
@@ -9,8 +9,8 @@ void refresh(uint8_t frm[ROWC][COLC], uint8_t latch, uint8_t enable){
   SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int j=COLC;j>0;j--){
-		for(int i=ROWC;i>0;i--){
+	for(int j=cols;j>0;j--){
+		for(int i=rows;i>0;i--){
     int received = SPI.transfer(frm[i-1][j-1]);
 		}
 	}

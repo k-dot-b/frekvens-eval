@@ -13,4 +13,4 @@
 #define SRMODE SPI_MODE0    //dataMode
 
 //declarations
-void refresh(uint8_t frame[ROWC][COLC], uint8_t latch_pin_n, uint8_t oe_pin_n);
+void refresh(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable);

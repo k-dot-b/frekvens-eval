@@ -7,6 +7,7 @@
 
 //-------------------------------------------
 // MACROS
+  //Global macros in params.h
 
 //-------------------------------------------
 // CONSTANTS
@@ -19,11 +20,12 @@
 
   //for test routine
   int cluster=0;
+  uint8_t cluster_data = 0xff;
 //-------------------------------------------
 // FUNCTION DECLARATIONS
-void fgen_cluster_stepper(uint8_t frm[ROWC][COLC], int px);
+void fgen_cluster_stepper(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data);
 
-//-------------------------------------------
+
 
 //===========================================
 void setup() {
@@ -35,7 +37,7 @@ void setup() {
   SPI.begin();
   Serial.begin(115200);
 
-  //reset frame
+  //reset frame with zeros
   for(int i=0;i<ROWC;i++){
     for(int j=0;j<COLC;j++){
       g_frame[i][j]=0;
@@ -49,7 +51,11 @@ void setup() {
 void loop() {
   
   //test routine: cluster stepper
-  fgen_cluster_stepper(g_frame, cluster);
+  fgen_cluster_stepper(g_frame, ROWC, COLC, cluster, cluster_data);
+  if (cluster<31)
+    cluster++;
+  else
+    cluster=0;
 
   Serial.println("Frame:");
 	for(int i=0;i<ROWC;i++){
@@ -60,27 +66,23 @@ void loop() {
 		Serial.println();
 	}
 
-  refresh(g_frame, LATCH_PIN, OE_PIN);
+  refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);
 
-  if (cluster<31)
-    cluster++;
-  else
-    cluster=0;
-  delay(1000);
+  delay(200);
   //end test routine
 }
 
 //-------------------------------------------
 // FUNCTION DEFINITIONS
-void fgen_cluster_stepper(uint8_t frm[ROWC][COLC], int px){
+void fgen_cluster_stepper(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data){
   if (!(frm&&*frm))
 		return;
 
   int cnt=0;
-  for(int i=0;i<ROWC;i++){
-    for(int j=0;j<COLC;j++){
-      if (cnt==px){
-        frm[i][j]=0x55;
+  for(int i=0;i<rows;i++){
+    for(int j=0;j<cols;j++){
+      if (cnt==segment){
+        frm[i][j]=data;
       }
       else
         frm[i][j]=0;
