@@ -42,3 +42,35 @@ bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t 
   return true;
 }
 
+void refreshf(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable){
+	if (!(bitmap&&*bitmap))
+		return;
+	
+  digitalWrite(enable, HIGH);	//blank display
+
+  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
+	//Last value first
+  //SRORDER: LSBFIRST
+  /*
+	for(int j=FRAME_COL;j>0;j--){
+		for(int i=rows;i>0;i--){
+    int received = SPI.transfer(frame[i-1][j-1]);
+		}
+	}
+  */
+  SPI.endTransaction();
+
+  digitalWrite(latch, HIGH);	//latch new values
+  NOP;
+  digitalWrite(latch, LOW);
+
+  digitalWrite(enable, LOW);	//enable display
+}
+
+static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
+    buffer <<= 1;
+    if (*address)
+      buffer |= 1;
+    address++;
+  return buffer;
+}
