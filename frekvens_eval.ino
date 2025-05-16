@@ -72,6 +72,9 @@ void loop() {
 
 #ifdef _DEMO_H_INCLUDED
   //DEMO ROUTINE
+  Serial.print("Demo routine ");
+  Serial.print(g_routine);
+  Serial.println(" running");
   demo(g_routine);
   if (g_routine<DEFINED_ROUTINES)
     g_routine++;
@@ -80,7 +83,7 @@ void loop() {
   blank_bitmap(g_bitmap, ROWC);
   blank_frame(g_frame, ROWC, COLC);
   refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);
-  Serial.println();
+  Serial.println("Demo routine finished");
   //END DEMO ROUTINE
 #endif
 

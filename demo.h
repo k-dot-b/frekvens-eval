@@ -4,6 +4,9 @@
 #ifndef _DEMO_H_INCLUDED
 #define _DEMO_H_INCLUDED
 
+#define VERBOSE_DEMO
+#undef  VERBOSE_DEMO
+
 #include <Arduino.h>
 
 #include "params.h"
@@ -12,8 +15,8 @@
 #define DEFINED_ROUTINES 2
 
 #define CLUSTER_DATA  255
-#define CLUSTER_MAX 31
-#define PIXEL_MAX   255
+#define CLUSTER_MAX 32
+#define PIXEL_MAX   256
 
 #define STEP_DELAY_1 240
 #define STEP_DELAY_2 30
