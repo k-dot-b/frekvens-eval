@@ -11,18 +11,41 @@
 
 //-------------------------------------------
 // CONSTANTS
-  const int LATCH_PIN = 8;  //Latch, falling edge
+  //frame dimensions ROWC and COLC must be defined as macros in params.h
+
+  const int LATCH_PIN = 8;  //Latch, falling edge triggered
   const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
+
+  //Display refresh period
+  const int STEP_DELAY = 200;
+
 //-------------------------------------------
 // GLOBAL VARIABLES
-  //frame dimensions ROWC and COLC must be defined as macros in params.h
+  /**
+  * Direct frame data
+  * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
+  */
   uint8_t g_frame[ROWC][COLC];
+
+  /**
+  * Full frame bitmap
+  * Defines a byte for each pixel for grayscale data (future use).
+  */
+  uint8_t g_bitmap[ROWC][ROWC];
 
   //for test routine
   int cluster=0;
   uint8_t cluster_data = 0xff;
+
 //-------------------------------------------
 // FUNCTION DECLARATIONS
+/**
+* TEST FUNCTION
+* Writes data into the selected byte, and fills the rest of the array with zeroes
+* 
+* segment:    The selected byte of the Direct data frame
+* data:       Data to be written into the segment
+*/
 void fgen_cluster_stepper(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data);
 
 
@@ -68,7 +91,7 @@ void loop() {
 
   refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);
 
-  delay(200);
+  delay(STEP_DELAY);
   //end test routine
 }
 

@@ -1,7 +1,7 @@
 #include "shift.h"
 
-void refresh(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
-	if (!(frm&&*frm))
+void refresh(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
+	if (!(frame&&*frame))
 		return;
 	
   digitalWrite(enable, HIGH);	//blank display
@@ -11,7 +11,7 @@ void refresh(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, ui
   //SRORDER: LSBFIRST
 	for(int j=cols;j>0;j--){
 		for(int i=rows;i>0;i--){
-    int received = SPI.transfer(frm[i-1][j-1]);
+    int received = SPI.transfer(frame[i-1][j-1]);
 		}
 	}
   SPI.endTransaction();
@@ -22,3 +22,11 @@ void refresh(uint8_t (*frm)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, ui
 
   digitalWrite(enable, LOW);	//enable display
 }
+
+bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols){
+  if (!(bitmap&&*bitmap) || !(frame&&*frame))
+    return false;
+
+  return true;
+}
+
