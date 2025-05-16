@@ -27,6 +27,18 @@ bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t 
   if (!(bitmap&&*bitmap) || !(frame&&*frame))
     return false;
 
+  for (int i=0;i<rows;i++){
+    uint8_t cnt = 0;
+    for (int j=0;j<cols;j++){
+      for (int k=0;k<8;k++){
+        frame[i][j] <<= 1;
+        if (bitmap[i][cnt])
+          frame[i][j] |= 1;
+        cnt++;
+      }
+    }
+  }
+
   return true;
 }
 
