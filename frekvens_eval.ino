@@ -3,7 +3,8 @@
 
 #include "params.h"
 #include "shift.h"
-#include "demo.h"
+//#include "demo.h"
+#include "sorting.h"
 
 //-------------------------------------------
 // MACROS
@@ -89,6 +90,8 @@ void loop() {
   //END DEMO ROUTINE
 #endif
 
+sorting();
+delay(5000);
 }
 
 //-------------------------------------------

@@ -3,22 +3,27 @@
 
 
 //lookup table
+/*
 static const uint16_t columnHeight[] = {0x0001, 0x0003, 0x0007, 0x1f, 0x3f, 0x7f, 0xff, 0x1ff, 0x3ff, 
 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff};
+*/
 
 static const int N = 16;
 //static const long RAND_MAX = 2047;
 
 
 static uint8_t numbers[N];
+static const int SORT_STEP_DELAY = 200;
 
 
 void sorting()
 {
   generate();
+  bitMapGenerate();
+mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+delay(2000);
   // Merge sort
   mergeSort(0, N - 1);
-
 
 
   return 0;
@@ -41,16 +46,28 @@ void mergeSort(int bottom, int top)
                 tmp[k++] = numbers[i++];
             else
                 tmp[k++] = numbers[j++];
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(SORT_STEP_DELAY);
         }
 
         while (i <= mid)
             tmp[k++] = numbers[i++];
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(SORT_STEP_DELAY);
 
         while (j <= top)
             tmp[k++] = numbers[j++];
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(SORT_STEP_DELAY);
 
         for (i = bottom, k = 0; i <= top; ++i, ++k)
             numbers[i] = tmp[k];
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(SORT_STEP_DELAY);
     }
 }
 
@@ -78,7 +95,14 @@ void shuffle(uint8_t array[N])
 }
 
 void bitMapGenerate(){
-  
+
+  for(int i=0; i<N; i++){   //column
+    for(int j=0; j<N; j++){ //row 
+        if(j < numbers[i]){
+            g_bitmap[i][j] = 1;
+        } else g_bitmap[i][j] = 0;
+    }
+  }
 }
 
 
