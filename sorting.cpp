@@ -19,15 +19,17 @@ void sorting()
 {
   generate();
   bitMapGenerate();
-mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
-delay(2000);
-  // Merge sort
-  mergeSort(0, N - 1);
+  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+  delay(2000);
+
+  quickSort(0, N-1);
 
 
   return 0;
 }
 
+//mergesort implementation
+/*
 void mergeSort(int bottom, int top)
 {
     if (bottom < top)
@@ -73,6 +75,54 @@ void mergeSort(int bottom, int top)
             delay(SORT_STEP_DELAY);
     }
 }
+*/
+//quicksort implementation
+
+int temp;
+void quickSort(int bottom, int top)
+{
+    if (bottom < top)
+    {
+        int p = partition(bottom, top);
+        quickSort(bottom, p - 1);
+        quickSort(p + 1, top);
+    }
+}
+
+int partition(int bottom, int top)
+{
+    int key = numbers[top];
+    int i = bottom - 1;
+    
+    for (int j = bottom; j < top; j++)
+    {
+        if (numbers[j] <= key)
+        {
+            i++;
+            temp = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = temp;
+            //swap(numbers[i], numbers[j]);
+
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(SORT_STEP_DELAY);
+            
+        }
+    }
+    //swap(numbers[i + 1], numbers[top]);
+    temp = numbers[i + 1];
+    numbers[i + 1] = numbers[top];
+    numbers[top] = temp;
+
+    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+    bitMapGenerate();
+    delay(SORT_STEP_DELAY);
+    return i + 1;
+}
+
+//--------------------------
+
 
 void generate()
 {
