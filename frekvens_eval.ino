@@ -9,7 +9,7 @@
 //-------------------------------------------
 // MACROS
   //Global macros in params.h
-
+#define FIRST_ROUTINE 2
 //-------------------------------------------
 // CONSTANTS
   //frame dimensions ROWC and COLC must be defined as macros in params.h
@@ -43,7 +43,7 @@
   volatile bool sem_tx;
 
   //test routine (demo)
-  int g_routine = 1;
+  int g_routine = FIRST_ROUTINE;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
@@ -79,7 +79,7 @@ void loop() {
   if (g_routine<DEFINED_ROUTINES)
     g_routine++;
   else
-    g_routine=1;
+    g_routine=FIRST_ROUTINE;
   blank_bitmap(g_bitmap, ROWC);
   blank_frame(g_frame, ROWC, COLC);
   refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);

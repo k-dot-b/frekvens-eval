@@ -1,6 +1,6 @@
 #include "shift.h"
 
-void refresh(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
+void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frame&&*frame))
 		return;
 	
@@ -23,7 +23,7 @@ void refresh(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, 
   digitalWrite(enable, LOW);	//enable display
 }
 
-bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols){
+bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols){
   if (!(bitmap&&*bitmap) || !(frame&&*frame))
     return false;
 
@@ -38,7 +38,6 @@ bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t 
       }
     }
   }
-
   return true;
 }
 
@@ -59,7 +58,7 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enab
       }
     }
   }
-  //digitalWrite(enable, HIGH);	//blank display
+  //Transmit frame through SPI
   SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 	//Last value first
   //SRORDER: LSBFIRST
@@ -73,8 +72,6 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enab
   digitalWrite(latch, HIGH);	//latch new values
   NOP;
   digitalWrite(latch, LOW);
-
-  //digitalWrite(enable, LOW);	//enable display
 }
 
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
