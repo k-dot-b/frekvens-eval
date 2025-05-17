@@ -55,7 +55,7 @@ void demo(uint8_t routine){
     case 3:
       for (int d=PIXEL_MAX;d>0;d--){
         fgen_pixel_picker(g_bitmap, DIMC, d);
-        mrefresh(g_bitmap, DIMC, LATCH_PIN, OE_PIN);
+        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_2);
       }
       break;

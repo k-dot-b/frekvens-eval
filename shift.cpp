@@ -1,5 +1,9 @@
 #include "shift.h"
 
+uint8_t g_bitmap[DIMC][DIMC];
+
+static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+
 void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frame&&*frame))
 		return;
@@ -41,18 +45,18 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
   return true;
 }
 
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable){
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
 	
   //Compile frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
-  for (int i=0;i<dimc;i++){
+  for (int i=0;i<dim;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
-        if (bitmap[i][cnt])
+        if ((bitmap[i][cnt] & bitmask[mask]))
           frame_buffer[i][j] |= 1;
         cnt++;
       }

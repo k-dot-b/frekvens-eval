@@ -1,11 +1,12 @@
+// frekvens_driver.h
+// Display driver for FREKVENS LED array
+
 #include <Arduino.h>
-
-#ifndef _SPI_H_INCLUDED
 #include <SPI.h>
-#endif //_SPI_H_INCLUDED
 
-#include "params.h"
-#include "utils.h"
+//NOP instruction
+//inline assembly
+#define NOP __asm__ __volatile__ ("nop\n\t")
 
 //Common dimension (rows)
 //Display is (DIMC) pixels tall
@@ -49,19 +50,15 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 /*
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
-* *bitmap:  byte array (square)
-* dimc:     dimension of bitmap
-* latch:    Latch pin number
-* enable:   Output Enable pin number
+* *bitmap:  Byte array that contains the image.
+* dim:      Dimension of bitmap (square matrix).
+* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
+* latch:    Latch pin number.
+* enable:   Output Enable pin number.
 */
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable);
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /*
 * Compiles a single byte from eitght consecutive values by address
-*
-* bitmap:   byte array, 16x16
-* frame:    byte array, 16x2
-* rows:     array row count (bitmap and frame)
-* cols:     array column count (frame)
 */
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer);

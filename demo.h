@@ -32,7 +32,7 @@
   * Full frame bitmap
   * Defines a byte for each pixel for grayscale data (future use).
   */
-  extern uint8_t g_bitmap[ROWC][ROWC];
+  extern uint8_t g_bitmap[DIMC][DIMC];
 
   //Pin definitions
   extern const int LATCH_PIN;
