@@ -7,8 +7,10 @@
 #include "params.h"
 #include "utils.h"
 
-//frame columns
-#define FRAME_COL 2
+//column count for the frame buffer
+#ifndef COLB
+#define COLB 2
+#endif
 
 //SPISettings parameters
 #define SRSPEED 125000      //speedMaximum
@@ -37,14 +39,14 @@ void refresh(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, uint8_t latch, 
 bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols);
 
 /*
-* Transmits the frame to the LED drivers via SPI
+* Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
 * *bitmap:  byte array (square)
 * dimc:     array common dimension
 * latch:    Latch pin number
 * enable:   Output Enable pin number
 */
-void refreshf(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable);
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable);
 
 /*
 * Compiles a single byte from eitght consecutive values by address

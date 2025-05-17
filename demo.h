@@ -12,7 +12,7 @@
 #include "params.h"
 #include "shift.h"
 
-#define DEFINED_ROUTINES 2
+#define DEFINED_ROUTINES 3
 
 #define CLUSTER_DATA  255
 #define CLUSTER_MAX 32

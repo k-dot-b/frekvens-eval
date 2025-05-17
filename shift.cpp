@@ -42,29 +42,39 @@ bool map(uint8_t (*bitmap)[ROWC], uint8_t (*frame)[COLC], uint8_t rows, uint8_t 
   return true;
 }
 
-void refreshf(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable){
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimc, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
 	
-  digitalWrite(enable, HIGH);	//blank display
-
+  //Compile frame from the bitmap
+  uint8_t frame_buffer[DIMC][COLB];
+  for (int i=0;i<dimc;i++){
+    uint8_t cnt = 0;
+    for (int j=0;j<COLB;j++){
+      for (int k=0;k<8;k++){
+        frame_buffer[i][j] <<= 1;
+        if (bitmap[i][cnt])
+          frame_buffer[i][j] |= 1;
+        cnt++;
+      }
+    }
+  }
+  //digitalWrite(enable, HIGH);	//blank display
   SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 	//Last value first
   //SRORDER: LSBFIRST
-  /*
-	for(int j=FRAME_COL;j>0;j--){
-		for(int i=rows;i>0;i--){
-    int received = SPI.transfer(frame[i-1][j-1]);
+	for(int j=COLB-1;j>=0;j--){
+		for(int i=DIMC-1;i>=0;i--){
+    int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
-  */
   SPI.endTransaction();
 
   digitalWrite(latch, HIGH);	//latch new values
   NOP;
   digitalWrite(latch, LOW);
 
-  digitalWrite(enable, LOW);	//enable display
+  //digitalWrite(enable, LOW);	//enable display
 }
 
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
