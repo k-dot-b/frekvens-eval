@@ -12,7 +12,7 @@
 //Display is (DIMC) pixels tall
 #define DIMC 16
 //Column count for the frame buffer
-//Display is (COLB x 16) pixels wide
+//Display is (COLB x 8) pixels wide
 #define COLB 2
 
 //SPISettings parameters

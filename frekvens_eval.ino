@@ -2,7 +2,6 @@
 // Evaluation program
 
 #include "params.h"
-#include "utils.h"
 #include "shift.h"
 #include "demo.h"
 
