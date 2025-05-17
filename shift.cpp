@@ -48,6 +48,8 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
+  if (dim!=DIMC)
+    return;
 	
   //Compile frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
