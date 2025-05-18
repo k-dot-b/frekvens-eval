@@ -59,6 +59,15 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /*
+* Compiles the frame from the global bitmap and transmits it to the LED drivers via SPI
+*
+* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
+* latch:    Latch pin number.
+* enable:   Output Enable pin number.
+*/
+void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
+
+/*
 * Compiles a single byte from eitght consecutive values by address
 */
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
