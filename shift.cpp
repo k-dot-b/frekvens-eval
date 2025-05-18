@@ -48,6 +48,8 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
+  if (dim!=DIMC)
+    return;
 	
   //Compile frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
@@ -57,6 +59,39 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch,
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
+          frame_buffer[i][j] |= 1;
+        cnt++;
+      }
+    }
+  }
+  //Transmit frame through SPI
+  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
+	//Last value first
+  //SRORDER: LSBFIRST
+	for(int j=COLB-1;j>=0;j--){
+		for(int i=DIMC-1;i>=0;i--){
+    int received = SPI.transfer(frame_buffer[i][j]);
+		}
+	}
+  SPI.endTransaction();
+
+  digitalWrite(latch, HIGH);	//latch new values
+  NOP;
+  digitalWrite(latch, LOW);
+}
+
+void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable){
+  if (!g_bitmap)
+		return;
+	
+  //Compile frame from the bitmap
+  uint8_t frame_buffer[DIMC][COLB];
+  for (int i=0;i<DIMC;i++){
+    uint8_t cnt = 0;
+    for (int j=0;j<COLB;j++){
+      for (int k=0;k<8;k++){
+        frame_buffer[i][j] <<= 1;
+        if ((g_bitmap[i][cnt] & bitmask[mask]))
           frame_buffer[i][j] |= 1;
         cnt++;
       }
