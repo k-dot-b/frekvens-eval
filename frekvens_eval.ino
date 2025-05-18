@@ -2,14 +2,13 @@
 // Evaluation program
 
 #include "params.h"
-#include "utils.h"
 #include "shift.h"
 #include "demo.h"
 
 //-------------------------------------------
 // MACROS
   //Global macros in params.h
-
+#define FIRST_ROUTINE 2
 //-------------------------------------------
 // CONSTANTS
   //frame dimensions ROWC and COLC must be defined as macros in params.h
@@ -27,10 +26,10 @@
   uint8_t g_frame[ROWC][COLC];
 
   /**
-  * Full frame bitmap.
-  * Defines a byte for each pixel.
+  * EXTERNAL VARIABLE
+  * Frame bitmap array (from shift.h)
   */
-  uint8_t g_bitmap[ROWC][ROWC];
+  extern uint8_t g_bitmap[DIMC][DIMC];
 
   /**
   * Semaphore for map function
@@ -43,15 +42,17 @@
   volatile bool sem_tx;
 
   //test routine (demo)
-  int g_routine = 1;
+  int g_routine = FIRST_ROUTINE;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
-void blank_bitmap(uint8_t (*bitmap)[ROWC], uint8_t rows);
+
+void blank_bitmap(uint8_t (*bitmap)[DIMC], uint8_t dim);
 
 void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols);
 
 //===========================================
+
 void setup() {
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(OE_PIN, OUTPUT);
@@ -61,13 +62,14 @@ void setup() {
   SPI.begin();
   Serial.begin(115200);
 
-  blank_bitmap(g_bitmap, ROWC);
+  blank_bitmap(g_bitmap, DIMC);
   blank_frame(g_frame, ROWC, COLC);
 
   digitalWrite(OE_PIN, LOW);  //Enable display
 }
 
 //===========================================
+
 void loop() {
 
 #ifdef _DEMO_H_INCLUDED
@@ -79,10 +81,10 @@ void loop() {
   if (g_routine<DEFINED_ROUTINES)
     g_routine++;
   else
-    g_routine=1;
-  blank_bitmap(g_bitmap, ROWC);
+    g_routine=FIRST_ROUTINE;
+  blank_bitmap(g_bitmap, DIMC);
   blank_frame(g_frame, ROWC, COLC);
-  refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);
+  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
   Serial.println("Demo routine finished");
   //END DEMO ROUTINE
 #endif
@@ -91,10 +93,10 @@ void loop() {
 
 //-------------------------------------------
 // FUNCTION DEFINITIONS
-void blank_bitmap(uint8_t (*bitmap)[ROWC], uint8_t rows){
-  uint8_t cols = rows;
-  for(int i=0;i<rows;i++){
-    for(int j=0;j<cols;j++){
+
+void blank_bitmap(uint8_t (*bitmap)[DIMC], uint8_t dim){
+  for(int i=0;i<dim;i++){
+    for(int j=0;j<dim;j++){
       bitmap[i][j]=0;
     }
   }

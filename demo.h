@@ -12,7 +12,7 @@
 #include "params.h"
 #include "shift.h"
 
-#define DEFINED_ROUTINES 2
+#define DEFINED_ROUTINES 3
 
 #define CLUSTER_DATA  255
 #define CLUSTER_MAX 32
@@ -32,7 +32,7 @@
   * Full frame bitmap
   * Defines a byte for each pixel for grayscale data (future use).
   */
-  extern uint8_t g_bitmap[ROWC][ROWC];
+  extern uint8_t g_bitmap[DIMC][DIMC];
 
   //Pin definitions
   extern const int LATCH_PIN;
