@@ -18,12 +18,11 @@ static const int SORT_STEP_DELAY = 200;
 void sorting()
 {
   generate();
-  bitMapGenerate();
-  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
   delay(2000);
 
   quickSort(0, N-1);
 
+  reset();
 
   return 0;
 }
@@ -115,8 +114,8 @@ int partition(int bottom, int top)
     numbers[i + 1] = numbers[top];
     numbers[top] = temp;
 
-    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
     bitMapGenerate();
+    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
     delay(SORT_STEP_DELAY);
     return i + 1;
 }
@@ -129,6 +128,9 @@ void generate()
 
     for(int i=0; i<N; i++){
         numbers[i] = i;
+        bitMapGenerate();
+          mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+          delay(100);
     }
 
     shuffle(numbers);
@@ -139,12 +141,24 @@ void generate()
 void shuffle(uint8_t array[N])
 {
     
-    for (int i = 0; i < N - 1; i++) {
+    for (int i = 0; i < N; i++) {  //removed n-1
           uint8_t j = lowByte(i) + random(RAND_MAX) / (RAND_MAX / (N - i) + 1);
           uint8_t t = array[j];
           array[j] = array[i];
           array[i] = t;
+            bitMapGenerate();
+            mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+            delay(100);
     }
+}
+
+void reset(){
+  for(int i=0; i<N; i++){
+        numbers[i] = 0;
+        bitMapGenerate();
+        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+        delay(100);
+}
 }
 
 void bitMapGenerate(){
@@ -152,8 +166,8 @@ void bitMapGenerate(){
   for(int i=0; i<N; i++){   //column
     for(int j=0; j<N; j++){ //row 
         if(j < numbers[i]){
-            g_bitmap[i][j] = 1;
-        } else g_bitmap[i][j] = 0;
+            g_bitmap[j][i] = 0;
+        } else g_bitmap[j][i] = 1;
     }
   }
 }
@@ -168,5 +182,6 @@ void bitMapGenerInt(int array[N]){
     }
   }
 }
+
 
 

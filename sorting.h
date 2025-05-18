@@ -12,6 +12,7 @@ extern const int OE_PIN;
 void generate();
 void sorting();
 void shuffle(uint8_t array[N]);
+void reset();
 
 //current sorting program
 void quickSort(int, int);
