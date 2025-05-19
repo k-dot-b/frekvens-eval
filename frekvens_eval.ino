@@ -90,6 +90,10 @@ void loop() {
   //END DEMO ROUTINE
 #endif
 
+//Display brightness experiment
+//No result so far
+//analogWrite(OE_PIN, 5);
+
 sorting();
 delay(1000);
 }
