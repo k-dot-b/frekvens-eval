@@ -154,7 +154,7 @@ void shuffle(uint8_t array[N])
 
 void reset(){
   for(int i=0; i<N; i++){
-        numbers[i] = 0;
+        numbers[i] = 15;
         bitMapGenerate();
         mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
         delay(100);
@@ -165,7 +165,7 @@ void bitMapGenerate(){
 
   for(int i=0; i<N; i++){   //column
     for(int j=0; j<N; j++){ //row 
-        if(j < numbers[i]){
+        if(j < 15-numbers[i]){
             g_bitmap[j][i] = 0;
         } else g_bitmap[j][i] = 1;
     }
@@ -176,9 +176,9 @@ void bitMapGenerInt(int array[N]){
 
   for(int i=0; i<N; i++){   //column
     for(int j=0; j<N; j++){ //row 
-        if(j < array[i]){
-            g_bitmap[i][j] = 1;
-        } else g_bitmap[i][j] = 0;
+        if(j < 15-array[i]){
+            g_bitmap[i][j] = 0;
+        } else g_bitmap[i][j] = 1;
     }
   }
 }
