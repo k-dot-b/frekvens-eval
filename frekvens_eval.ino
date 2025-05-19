@@ -9,6 +9,10 @@
 //-------------------------------------------
 // MACROS
   //Global macros in params.h
+
+  //Higher value means less brightness
+#define DISPLAY_DIM 200   // 0-255
+
 #define FIRST_ROUTINE 2
 //-------------------------------------------
 // CONSTANTS
@@ -91,8 +95,7 @@ void loop() {
 #endif
 
 //Display brightness experiment
-//No result so far
-//analogWrite(OE_PIN, 5);
+analogWrite(OE_PIN, DISPLAY_DIM);
 
 sorting();
 delay(1000);
