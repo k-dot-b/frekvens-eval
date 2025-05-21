@@ -57,7 +57,7 @@ void setup() {
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(OE_PIN, OUTPUT);
   digitalWrite(LATCH_PIN, LOW);
-  digitalWrite(OE_PIN, HIGH);
+  disableDisplay(OE_PIN);
 
   SPI.begin();
   Serial.begin(115200);

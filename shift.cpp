@@ -129,5 +129,9 @@ void enableDisplay(int oe_pin, uint8_t dim){
     analogWrite(oe_pin, dim);
     return;
   }
-  digitalWrite(oe_pin, false);
+  digitalWrite(oe_pin, LOW);
+}
+
+void disableDisplay(int oe_pin){
+  digitalWrite(oe_pin, HIGH);
 }

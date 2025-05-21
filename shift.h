@@ -77,9 +77,16 @@ void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 
 /**
-* Dim the display by applying PWM to the Output Enable pin
+* Dim the display by applying PWM to the Output Enable pin.
 * 
-* oe_pin:   Output Enable pin number
-* dim:      Dimness value (1 - 254)
+* oe_pin:   Output Enable pin number.
+* dim:      Dimness value (1 - 254). Write 0 to disable PWM.
 */
 void enableDisplay(int oe_pin, uint8_t dim);
+
+/**
+* Disable the display via the Output Enable pin
+*
+* oe_pin:   Output Enable pin number.
+*/
+void disableDisplay(int oe_pin);
