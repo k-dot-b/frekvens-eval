@@ -123,3 +123,11 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
     address++;
   return buffer;
 }
+
+void enableDisplay(int oe_pin, uint8_t dim){
+  if (dim>0 && dim<255){
+    analogWrite(oe_pin, dim);
+    return;
+  }
+  digitalWrite(oe_pin, false);
+}
