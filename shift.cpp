@@ -4,6 +4,7 @@ uint8_t g_bitmap[DIMC][DIMC];
 
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
+//DEPRECATED FUNCTION!
 void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frame&&*frame))
 		return;
@@ -27,6 +28,7 @@ void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, 
   digitalWrite(enable, LOW);	//enable display
 }
 
+//DEPRECATED FUNCTION!
 bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols){
   if (!(bitmap&&*bitmap) || !(frame&&*frame))
     return false;
@@ -51,15 +53,15 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch,
   if (dim!=DIMC)
     return;
 	
-  //Compile frame from the bitmap
+  //Compile a frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
   for (int i=0;i<dim;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        frame_buffer[i][j] <<= 1;
+        frame_buffer[i][j] >>= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          frame_buffer[i][j] |= 1;
+          frame_buffer[i][j] |= 128;
         cnt++;
       }
     }
@@ -68,8 +70,8 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch,
   SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int j=COLB-1;j>=0;j--){
-		for(int i=DIMC-1;i>=0;i--){
+	for(int j=0;j<COLB;j++){
+		for(int i=0;i<DIMC;i++){
     int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
@@ -80,19 +82,20 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch,
   digitalWrite(latch, LOW);
 }
 
+//DEPRECATED FUNCTION!
 void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable){
   if (!g_bitmap)
 		return;
 	
-  //Compile frame from the bitmap
+  //Compile a frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
   for (int i=0;i<DIMC;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        frame_buffer[i][j] <<= 1;
+        frame_buffer[i][j] >>= 1;
         if ((g_bitmap[i][cnt] & bitmask[mask]))
-          frame_buffer[i][j] |= 1;
+          frame_buffer[i][j] |= 128;
         cnt++;
       }
     }
@@ -119,4 +122,16 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
       buffer |= 1;
     address++;
   return buffer;
+}
+
+void enableDisplay(int oe_pin, uint8_t dim){
+  if (dim>0 && dim<255){
+    analogWrite(oe_pin, dim);
+    return;
+  }
+  digitalWrite(oe_pin, LOW);
+}
+
+void disableDisplay(int oe_pin){
+  digitalWrite(oe_pin, HIGH);
 }

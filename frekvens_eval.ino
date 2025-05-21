@@ -7,8 +7,13 @@
 
 //-------------------------------------------
 // MACROS
-  //Global macros in params.h
+
+//The starting point of the demo sequence
 #define FIRST_ROUTINE 2
+
+//Higher number means less brightness
+#define DISPLAY_DIMNESS 240
+
 //-------------------------------------------
 // CONSTANTS
   //frame dimensions ROWC and COLC must be defined as macros in params.h
@@ -32,14 +37,9 @@
   extern uint8_t g_bitmap[DIMC][DIMC];
 
   /**
-  * Semaphore for map function
+  * Define semaphores here if needed
   */
-  volatile bool sem_map;
 
-  /**
-  * Semaphore for refresh function
-  */
-  volatile bool sem_tx;
 
   //test routine (demo)
   int g_routine = FIRST_ROUTINE;
@@ -57,7 +57,7 @@ void setup() {
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(OE_PIN, OUTPUT);
   digitalWrite(LATCH_PIN, LOW);
-  digitalWrite(OE_PIN, HIGH);
+  disableDisplay(OE_PIN);
 
   SPI.begin();
   Serial.begin(115200);
@@ -65,7 +65,7 @@ void setup() {
   blank_bitmap(g_bitmap, DIMC);
   blank_frame(g_frame, ROWC, COLC);
 
-  digitalWrite(OE_PIN, LOW);  //Enable display
+  enableDisplay(OE_PIN, DISPLAY_DIMNESS);
 }
 
 //===========================================
