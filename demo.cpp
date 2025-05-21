@@ -7,7 +7,7 @@ void demo(uint8_t routine){
   //--------------------------------------------------------------------
   // WRITE DEMO ROUTINES HERE AS CASES:
   switch (routine){
-      //DEPRECATED test routine 1: cluster stepper - sequential
+    //DEPRECATED test routine 1: cluster stepper - sequential
     case 1:
       for (int d=0;d<CLUSTER_MAX;d++){
         fgen_cluster_picker(g_frame, ROWC, COLC, d, CLUSTER_DATA);
@@ -29,29 +29,17 @@ void demo(uint8_t routine){
       break;
       //end test routine 1
     
-    //test routine 2: bit stepper - sequential
+    //test routine 2: pixel chase - sequential
     case 2:
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
-        map(g_bitmap, g_frame, DIMC, COLB);
-        refresh(g_frame, DIMC, COLB, LATCH_PIN, OE_PIN);
-
-        #ifdef VERBOSE_DEMO
-        Serial.println("Pixel step frame:");
-        for(int i=0;i<DIMC;i++){
-          for(int j=0;j<COLB;j++){
-          Serial.print(g_frame[i][j]);
-          Serial.print("		");
-          }
-          Serial.println();
-        }
-        #endif
+        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_2);
       }
       break;
       //end test routine 2
     
-    //test routine 3: mrefresh test - reverse sequential
+    //test routine 3: pixel chase - reverse
     case 3:
       for (int d=PIXEL_MAX;d>0;d--){
         fgen_pixel_picker(g_bitmap, DIMC, d);
