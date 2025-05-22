@@ -61,12 +61,12 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
 * *bitmap:  Byte array that contains the image.
-* dim:      Dimension of bitmap (square matrix).
+* dimension:      Dimension of bitmap (square matrix).
 * mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
 * latch:    Latch pin number.
 * enable:   Output Enable pin number.
 */
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable);
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /*
 * //DEPRECATED FUNCTION!
@@ -87,9 +87,9 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 /**
 * Enable the display. Dimming available by applying PWM to the Output Enable pin.
 * 
-* dim:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
+* dimness:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
 */
-void enableDisplay(uint8_t dim);
+void enableDisplay(uint8_t dimness);
 
 /**
 * Disable the display via the Output Enable pin

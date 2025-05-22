@@ -68,15 +68,15 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
   return true;
 }
 
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable){
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
-  if (dim!=DIMC)
+  if (dimension!=DIMC)
     return;
 	
   //Compile a frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
-  for (int i=0;i<dim;i++){
+  for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
@@ -145,9 +145,9 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
   return buffer;
 }
 
-void enableDisplay(uint8_t dim){
-  if (dim>0 && dim<255){
-    analogWrite(displayData.enable, dim);
+void enableDisplay(uint8_t dimness){
+  if (dimness>0 && dimness<255){
+    analogWrite(displayData.enable, dimness);
     return;
   }
   digitalWrite(displayData.enable, LOW);
