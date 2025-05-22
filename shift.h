@@ -1,12 +1,13 @@
 // frekvens_driver.h
 // Display driver for FREKVENS LED array
 
-#include <Arduino.h>
-#include <SPI.h>
+#ifndef FREKVENS_DRIVER_H_INCLUDED
+#define FREKVENS_DRIVER_H_INCLUDED
 
-//NOP instruction
-//inline assembly
-#define NOP __asm__ __volatile__ ("nop\n\t")
+#include <Arduino.h>
+#ifndef _SPI_H_INCLUDED
+#include <SPI.h>
+#endif
 
 //Common dimension (rows)
 //Display is (DIMC) pixels tall
@@ -14,11 +15,6 @@
 //Column count for the frame buffer
 //Display is (COLB x 8) pixels wide
 #define COLB 2
-
-//SPISettings parameters
-#define SRSPEED 125000      //speedMaximum
-#define SRORDER LSBFIRST    //dataOrder
-#define SRMODE SPI_MODE0    //dataMode
 
 /**
 * GLOBAL VARIABLE
@@ -68,6 +64,19 @@ bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t 
 */
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
+/**
+* New version of mrefresh() using internal sources for display parameters.
+* Compiles the frame from the bitmap and transmits it to the LED drivers via SPI.
+* "map-and-refresh"
+*
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of passed array (must be square!).
+* mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
+* latch:      Latch pin number.
+* enable:     Output Enable pin number.
+*/
+void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
+
 /*
 * //DEPRECATED FUNCTION!
 * Compiles the frame from the global bitmap and transmits it to the LED drivers via SPI
@@ -95,3 +104,5 @@ void enableDisplay(uint8_t dimness);
 * Disable the display via the Output Enable pin
 */
 void disableDisplay();
+
+#endif //FREKVENS_DRIVER_H_INCLUDED
