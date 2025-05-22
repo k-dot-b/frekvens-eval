@@ -14,8 +14,8 @@
 
 uint8_t g_bitmap[DIMC][DIMC];
 
-//For future use
-uint8_t bitmapBuffer[DIMC][DIMC];
+uint8_t bitmap_buffer[DIMC][DIMC];
+uint8_t frame_buffer[DIMC][COLB];
 
 //Display parameters
 struct displayPhy {
@@ -24,6 +24,40 @@ struct displayPhy {
 } displayData;
 
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+
+//Local version of map function
+static inline bool i_map(uint8_t mask){
+  //Compile a frame from the bitmap
+  for (int i=0;i<DIMC;i++){
+    uint8_t cnt = 0;
+    for (int j=0;j<COLB;j++){
+      for (int k=0;k<8;k++){
+        frame_buffer[i][j] <<= 1;
+        if ((bitmap_buffer[i][cnt] & bitmask[mask]))
+          frame_buffer[i][j] |= 1;
+        cnt++;
+      }
+    }
+  }
+  return true;
+}
+
+//Local version of refresh function
+static inline bool i_refresh(uint8_t mask){
+  //Transmit the frame through SPI
+  SPI.beginTransaction(SPISettings(SRSPEED, MSBFIRST, SRMODE));
+	for(int j=0;j<COLB;j++){
+		for(int i=0;i<DIMC;i++){
+    int received = SPI.transfer(frame_buffer[i][j]);
+		}
+	}
+  SPI.endTransaction();
+  //Latch new data
+  digitalWrite(displayData.latch, HIGH);
+  NOP;
+  digitalWrite(displayData.latch, LOW);
+  return true;
+}
 
 bool attachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
