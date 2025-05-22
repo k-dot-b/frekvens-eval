@@ -26,6 +26,14 @@
 */
 extern uint8_t g_bitmap[DIMC][DIMC];
 
+/**
+* Defines the physical connections to the display driver ICs
+*
+* latch_pin:    Latch pin number.
+* enable_pin:   Output Enable pin number.
+*/
+bool attachDisplay(int latch_pin, int enable_pin);
+
 /*
 * //DEPRECATED FUNCTION!
 * Transmits the frame to the LED drivers via SPI
@@ -77,16 +85,13 @@ void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 
 /**
-* Dim the display by applying PWM to the Output Enable pin.
+* Enable the display. Dimming available by applying PWM to the Output Enable pin.
 * 
-* oe_pin:   Output Enable pin number.
-* dim:      Dimness value (1 - 254). Write 0 to disable PWM.
+* dim:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
 */
-void enableDisplay(int oe_pin, uint8_t dim);
+void enableDisplay(uint8_t dim);
 
 /**
 * Disable the display via the Output Enable pin
-*
-* oe_pin:   Output Enable pin number.
 */
-void disableDisplay(int oe_pin);
+void disableDisplay();

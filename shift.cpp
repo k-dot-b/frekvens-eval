@@ -2,7 +2,28 @@
 
 uint8_t g_bitmap[DIMC][DIMC];
 
+
+//Display parameters
+struct displayPhy {
+  int latch = 0;
+  int enable = 0;
+} displayData;
+
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+
+bool attachDisplay(int latch_pin, int enable_pin){
+  if (latch_pin==enable_pin)
+    return false;
+  displayData.latch = latch_pin;
+  displayData.enable = enable_pin;
+
+  pinMode(latch_pin, OUTPUT);
+  pinMode(enable_pin, OUTPUT);
+
+  digitalWrite(latch_pin, LOW);
+  digitalWrite(enable_pin, LOW);  //Enable display
+  return true;
+}
 
 //DEPRECATED FUNCTION!
 void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
@@ -124,14 +145,14 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
   return buffer;
 }
 
-void enableDisplay(int oe_pin, uint8_t dim){
+void enableDisplay(uint8_t dim){
   if (dim>0 && dim<255){
-    analogWrite(oe_pin, dim);
+    analogWrite(displayData.enable, dim);
     return;
   }
-  digitalWrite(oe_pin, LOW);
+  digitalWrite(displayData.enable, LOW);
 }
 
-void disableDisplay(int oe_pin){
-  digitalWrite(oe_pin, HIGH);
+void disableDisplay(){
+  digitalWrite(displayData.enable, HIGH);
 }

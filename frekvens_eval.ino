@@ -54,18 +54,22 @@ void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols);
 //===========================================
 
 void setup() {
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(OE_PIN, OUTPUT);
-  digitalWrite(LATCH_PIN, LOW);
-  disableDisplay(OE_PIN);
+  Serial.begin(115200);
+
+  if (!attachDisplay(LATCH_PIN, OE_PIN)){
+    Serial.println("Display initialization failed!");
+    Serial.println("Incorrect pin definitions");
+    while(1){}
+  }
+
+  disableDisplay();
 
   SPI.begin();
-  Serial.begin(115200);
 
   blank_bitmap(g_bitmap, DIMC);
   blank_frame(g_frame, ROWC, COLC);
 
-  enableDisplay(OE_PIN, DISPLAY_DIMNESS);
+  enableDisplay(DISPLAY_DIMNESS);
 }
 
 //===========================================
