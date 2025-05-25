@@ -237,11 +237,15 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
   return buffer;
 }
 
-void enableDisplay(uint8_t dimness){
+void enableDisplayDimming(uint8_t dimness){
   if (dimness>0 && dimness<255){
     analogWrite(displayData.enable, dimness);
     return;
   }
+  digitalWrite(displayData.enable, LOW);
+}
+
+void enableDisplay(){
   digitalWrite(displayData.enable, LOW);
 }
 

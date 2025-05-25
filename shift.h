@@ -103,14 +103,19 @@ void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
 static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 
 /**
-* Enable the display. Dimming available by applying PWM to the Output Enable pin.
+* Enable the display with global PWM dimming via the Output Enable pin.
 * 
 * dimness:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
 */
-void enableDisplay(uint8_t dimness);
+void enableDisplayDimming(uint8_t dimness);
 
 /**
-* Disable the display via the Output Enable pin
+* Enable the display
+*/
+void enableDisplay();
+
+/**
+* Disable the display
 */
 void disableDisplay();
 

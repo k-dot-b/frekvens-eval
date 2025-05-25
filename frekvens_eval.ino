@@ -69,7 +69,7 @@ void setup() {
   blank_bitmap(g_bitmap, DIMC);
   blank_frame(g_frame, ROWC, COLC);
 
-  enableDisplay(DISPLAY_DIMNESS);
+  enableDisplayDimming(DISPLAY_DIMNESS);
 }
 
 //===========================================
