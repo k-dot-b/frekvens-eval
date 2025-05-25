@@ -43,7 +43,7 @@ static inline bool i_map(uint8_t mask){
 }
 
 //Local version of refresh function
-static inline bool i_refresh(uint8_t mask){
+static inline bool i_refresh(){
   //Transmit the frame through SPI
   SPI.beginTransaction(SPISettings(SRSPEED, MSBFIRST, SRMODE));
 	for(int j=0;j<COLB;j++){
@@ -71,6 +71,15 @@ bool attachDisplay(int latch_pin, int enable_pin){
   digitalWrite(latch_pin, LOW);
   digitalWrite(enable_pin, LOW);  //Enable display
   return true;
+}
+
+void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension){
+  if (!(bitmap&&*bitmap))
+		return;
+  if (dimension!=DIMC)
+    return;
+
+  memcpy(bitmap_buffer, bitmap, DIMC*DIMC);
 }
 
 //DEPRECATED FUNCTION!

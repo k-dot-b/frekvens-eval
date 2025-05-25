@@ -30,6 +30,15 @@ extern uint8_t g_bitmap[DIMC][DIMC];
 */
 bool attachDisplay(int latch_pin, int enable_pin);
 
+/**
+* WIP (part of grayscale image processor)
+* Load a new bitmap into the local buffer
+* 
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of bitmap (square matrix).
+*/
+void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+
 /*
 * //DEPRECATED FUNCTION!
 * Transmits the frame to the LED drivers via SPI
