@@ -9,10 +9,10 @@
 #include <SPI.h>
 #endif
 
-//Common dimension (rows)
-//Display is (DIMC) pixels tall
+//Common dimension of display related arrays (rows and columns)
+//Display is square with (DIMC) pixels on all sides
 #define DIMC 16
-//Column count for the frame buffer
+//Column count of the frame buffer array
 //Display is (COLB x 8) pixels wide
 #define COLB 2
 
@@ -46,29 +46,6 @@ bool attachDisplay(int latch_pin, int enable_pin);
 */
 void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension);
 
-/*
-* //DEPRECATED FUNCTION!
-* Transmits the frame to the LED drivers via SPI
-*
-* frame:    byte array, 16x2
-* rows:     array row count
-* cols:     array column count
-* latch:    Latch pin number
-* enable:   Output Enable pin number
-*/
-void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable);
-
-/*
-* //DEPRECATED FUNCTION!
-* Converts a bitmap into a direct frame for transmission
-*
-* bitmap:   byte array, 16x16
-* frame:    byte array, 16x2
-* rows:     array row count (bitmap and frame)
-* cols:     array column count (frame)
-*/
-bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols);
-
 /**
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
@@ -92,16 +69,6 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 * enable:     Output Enable pin number.
 */
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
-
-/*
-* //DEPRECATED FUNCTION!
-* Compiles the frame from the global bitmap and transmits it to the LED drivers via SPI
-*
-* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
-* latch:    Latch pin number.
-* enable:   Output Enable pin number.
-*/
-void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
 
 /*
 * //DEPRECATED FUNCTION!

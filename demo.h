@@ -4,9 +4,6 @@
 #ifndef _DEMO_H_INCLUDED
 #define _DEMO_H_INCLUDED
 
-#define VERBOSE_DEMO
-#undef  VERBOSE_DEMO
-
 #include <Arduino.h>
 
 #include "params.h"
@@ -14,6 +11,9 @@
 
 //-------------------------------------------------
 // DEMO PARAMETERS
+//Option for serial output
+#define VERBOSE_DEMO
+#undef  VERBOSE_DEMO
 //Define this for interrupt-based demo sequence
 #define DEMO_INTERRUPT
 //The starting point of the normal demo sequence

@@ -1,6 +1,34 @@
 #include "demo.h"
 
+//NOP instruction
+//inline assembly
+#define NOP __asm__ __volatile__ ("nop\n\t")
+
 uint8_t id = 0;
+
+//DEPRECATED FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
+void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
+	if (!(frame&&*frame))
+		return;
+	
+  digitalWrite(enable, HIGH);	//blank display
+
+  SPI.beginTransaction(SPISettings(125000, LSBFIRST, SPI_MODE0));
+	//Last value first
+  //SRORDER: LSBFIRST
+	for(int j=cols;j>0;j--){
+		for(int i=rows;i>0;i--){
+    int received = SPI.transfer(frame[i-1][j-1]);
+		}
+	}
+  SPI.endTransaction();
+
+  digitalWrite(latch, HIGH);	//latch new values
+  NOP;
+  digitalWrite(latch, LOW);
+
+  digitalWrite(enable, LOW);	//enable display
+}
 
 void demo(uint8_t routine){
   if (routine<1 || routine>DEFINED_ROUTINES)
