@@ -12,7 +12,15 @@
 #include "params.h"
 #include "shift.h"
 
+//-------------------------------------------------
+// DEMO PARAMETERS
+//Define this for interrupt-based demo sequence
+#define DEMO_INTERRUPT
+//The starting point of the normal demo sequence
+#define FIRST_ROUTINE 2
+//Number of defined cases in demo function
 #define DEFINED_ROUTINES 3
+//-------------------------------------------------
 
 #define CLUSTER_DATA  255
 #define CLUSTER_MAX 32
@@ -43,9 +51,14 @@
 * Calling this function produces a predefined image sequence.
 * Number of routines must be set in DEFINED_ROUTINES macro
 *
-* routine:    ID of requested routine.
+* routine:    ID of requested routine. Write 0 to skip.
 */
 void demo(uint8_t routine);
+
+/**
+* Call this from a timer interrupt
+*/
+void demoInterrupt();
 
 /**
 * TEST FUNCTION

@@ -1,5 +1,7 @@
 #include "demo.h"
 
+uint8_t id = 0;
+
 void demo(uint8_t routine){
   if (routine<1 || routine>DEFINED_ROUTINES)
     return;
@@ -53,6 +55,16 @@ void demo(uint8_t routine){
   }
   // END OF DEMO ROUTINES
   //--------------------------------------------------------------------
+}
+
+void demoInterrupt(){
+    fgen_pixel_picker(g_bitmap, DIMC, id);
+    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+  if (id<255){
+    id++;
+    return;
+  }
+  id=0;
 }
 
 void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data){

@@ -8,11 +8,8 @@
 //-------------------------------------------
 // MACROS
 
-//The starting point of the demo sequence
-#define FIRST_ROUTINE 2
-
 //Higher number means less brightness
-#define DISPLAY_DIMNESS 240
+#define DISPLAY_DIMNESS 0
 
 //-------------------------------------------
 // CONSTANTS
@@ -57,14 +54,16 @@ void setup() {
   /*
   * HARDWARE SPECIFIC CODE
   * Arduino Uno timer1 configuration
+  * 
+  * Current frequency: 6410 Hz
   */
   cli();  //Clear interrupts
   TCCR1A = 0; //Timer-Counter Control Register 1A
   TCCR1B = 0;
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
-  TCCR1B |= (1<<CS12) | (1<<CS10);
-  OCR1A = 7812; //Output compare register for:    1 Hz
+  TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
+  OCR1A = 155; //Output compare register value
   TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
   sei();  //Enable interrupts
   //End timer configuration
@@ -91,22 +90,24 @@ void setup() {
 
 void loop() {
 
-#ifdef _DEMO_H_INCLUDED
-  //DEMO ROUTINE
-  Serial.print("Demo routine ");
-  Serial.print(g_routine);
-  Serial.println(" running");
-  demo(g_routine);
-  if (g_routine<DEFINED_ROUTINES)
-    g_routine++;
-  else
-    g_routine=FIRST_ROUTINE;
-  blank_bitmap(g_bitmap, DIMC);
-  blank_frame(g_frame, ROWC, COLC);
-  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
-  Serial.println("Demo routine finished");
-  //END DEMO ROUTINE
-#endif
+  #ifdef _DEMO_H_INCLUDED
+    #ifndef DEMO_INTERRUPT
+    //DEMO ROUTINE
+    Serial.print("Demo routine ");
+    Serial.print(g_routine);
+    Serial.println(" running");
+    demo(g_routine);
+    if (g_routine<DEFINED_ROUTINES)
+      g_routine++;
+    else
+      g_routine=FIRST_ROUTINE;
+    blank_bitmap(g_bitmap, DIMC);
+    blank_frame(g_frame, ROWC, COLC);
+    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+    Serial.println("Demo routine finished");
+    //END DEMO ROUTINE
+    #endif //DEMO_INTERRUPT
+  #endif //_DEMO_H_INCLUDED
 
 }
 
@@ -130,8 +131,10 @@ void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols){
 }
 
 //===========================================
-// INTERRUPT ROUTINES
+// INTERRUPT SERVICE ROUTINES
 
 ISR(TIMER1_COMPA_vect){
-  //do something in the interrupt service routine
+  #if defined(_DEMO_H_INCLUDED) && defined(DEMO_INTERRUPT)
+  demoInterrupt();
+  #endif
 }
