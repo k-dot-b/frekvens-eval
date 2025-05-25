@@ -55,7 +55,9 @@ void setup() {
   * HARDWARE SPECIFIC CODE
   * Arduino Uno timer1 configuration
   * 
-  * Current frequency: 6410 Hz
+  * Current frequency: 400 Hz
+  * frequency | CSx2-1-0  | OCR
+  * 400 Hz    | 0-1-0     | 2499
   */
   cli();  //Clear interrupts
   TCCR1A = 0; //Timer-Counter Control Register 1A
@@ -63,7 +65,7 @@ void setup() {
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
   TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
-  OCR1A = 155; //Output compare register value
+  OCR1A = 2499; //Output compare register value
   TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
   sei();  //Enable interrupts
   //End timer configuration
