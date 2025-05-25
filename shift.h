@@ -23,6 +23,13 @@
 extern uint8_t g_bitmap[DIMC][DIMC];
 
 /**
+* GLOBAL VARIABLE
+* Buffer access control flags
+*/
+//extern bool flag_bitmap_available;
+//extern bool flag_frame_available;
+
+/**
 * Defines the physical connections to the display driver ICs
 *
 * latch_pin:    Latch pin number.

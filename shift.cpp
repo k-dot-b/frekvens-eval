@@ -14,6 +14,9 @@
 
 uint8_t g_bitmap[DIMC][DIMC];
 
+bool flag_bitmap_available = true;
+bool flag_frame_available = true;
+
 uint8_t bitmap_buffer[DIMC][DIMC];
 uint8_t frame_buffer[DIMC][COLB];
 
@@ -74,12 +77,16 @@ bool attachDisplay(int latch_pin, int enable_pin){
 }
 
 void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension){
-  if (!(bitmap&&*bitmap))
+  if (!(bitmap&&*bitmap) && dimension!=DIMC)
 		return;
-  if (dimension!=DIMC)
+  //if (dimension!=DIMC)
+    //return;
+  if (!flag_bitmap_available)
     return;
 
+  flag_bitmap_available = false;
   memcpy(bitmap_buffer, bitmap, DIMC*DIMC);
+  flag_bitmap_available = true;
 }
 
 //DEPRECATED FUNCTION!
