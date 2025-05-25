@@ -54,6 +54,21 @@ void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols);
 //===========================================
 
 void setup() {
+  /*
+  * HARDWARE SPECIFIC CODE
+  * Arduino Uno timer1 configuration
+  */
+  cli();  //Clear interrupts
+  TCCR1A = 0; //Timer-Counter Control Register 1A
+  TCCR1B = 0;
+  TCNT1 = 0;  //initialize counter value to 0
+  TCCR1B |= (1<<WGM12);
+  TCCR1B |= (1<<CS12) | (1<<CS10);
+  OCR1A = 7812; //Output compare register for:    1 Hz
+  TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
+  sei();  //Enable interrupts
+  //End timer configuration
+
   Serial.begin(115200);
 
   if (!attachDisplay(LATCH_PIN, OE_PIN)){
@@ -112,4 +127,11 @@ void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols){
       frame[i][j]=0;
     }
   }
+}
+
+//===========================================
+// INTERRUPT ROUTINES
+
+ISR(TIMER1_COMPA_vect){
+  //do something in the interrupt service routine
 }
