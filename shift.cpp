@@ -1,17 +1,46 @@
+// frekvens_driver.cpp
+// Display driver for FREKVENS LED array
+
 #include "shift.h"
 
+//SPISettings parameters
+#define FREKVENS_SRSPEED 125000      //speedMaximum
+
+//GLOBAL VARIABLES
+
+/**
+* DEPRECATED GLOBAL VARIABLE
+* Frame bitmap array
+*/
 uint8_t g_bitmap[DIMC][DIMC];
 
+/**
+* GLOBAL FLAG
+* Activity indicator for synchronising display related operations
+*/
+bool flag_frekvens_activity = false;
 
-//Display parameters
+/**
+* GLOBAL VARIABLE
+* Frame mask selector for Binary Code Modulation.
+* Default value of '8' disables masking
+*/
+uint8_t frekvens_bitmask_index = 8;
+
+
+//LIMITED SCOPE VARIABLES
+
+uint8_t i_bitmap_buffer[DIMC][DIMC];
+
 struct displayPhy {
   int latch = 0;
   int enable = 0;
-} displayData;
+} displayData;  //Display parameters
 
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
-bool attachDisplay(int latch_pin, int enable_pin){
+
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
     return false;
   displayData.latch = latch_pin;
@@ -25,47 +54,47 @@ bool attachDisplay(int latch_pin, int enable_pin){
   return true;
 }
 
-//DEPRECATED FUNCTION!
-void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
-	if (!(frame&&*frame))
+void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
+  if (!(bitmap&&*bitmap) && dimension!=DIMC)
 		return;
-	
-  digitalWrite(enable, HIGH);	//blank display
 
-  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
-	//Last value first
-  //SRORDER: LSBFIRST
-	for(int j=cols;j>0;j--){
-		for(int i=rows;i>0;i--){
-    int received = SPI.transfer(frame[i-1][j-1]);
-		}
-	}
-  SPI.endTransaction();
-
-  digitalWrite(latch, HIGH);	//latch new values
-  NOP;
-  digitalWrite(latch, LOW);
-
-  digitalWrite(enable, LOW);	//enable display
+  memcpy(i_bitmap_buffer, bitmap, DIMC*DIMC);
 }
 
-//DEPRECATED FUNCTION!
-bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols){
-  if (!(bitmap&&*bitmap) || !(frame&&*frame))
-    return false;
+void FrekvensLoadPixel(uint8_t data, uint8_t row, uint8_t col){
+  if (row>DIMC || col>DIMC)
+    return;
 
-  for (int i=0;i<rows;i++){
-    uint8_t cnt = 0;
-    for (int j=0;j<cols;j++){
-      for (int k=0;k<8;k++){
-        frame[i][j] <<= 1;
-        if (bitmap[i][cnt])
-          frame[i][j] |= 1;
-        cnt++;
+  i_bitmap_buffer[row][col] = data;
+}
+
+void FrekvensRefreshDisplay(){
+  uint8_t buffer[DIMC*COLB];
+  uint8_t cnt = 0;
+
+  for (int i=0;i<DIMC;i++){
+    for (int j=0;j<8;j++){    //read bits 0-7 in every row
+      buffer[cnt] <<= 1;
+      if ((i_bitmap_buffer[i][j] & bitmask[frekvens_bitmask_index]))
+        buffer[cnt] |= 1;
       }
-    }
+    cnt++;
   }
-  return true;
+  for (int i=0;i<DIMC;i++){
+    for (int j=8;j<16;j++){   //read bits 8-15 in every row
+      buffer[cnt] <<= 1;
+      if ((i_bitmap_buffer[i][j] & bitmask[frekvens_bitmask_index]))
+        buffer[cnt] |= 1;
+      }
+    cnt++;
+  }
+  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
+  SPI.transfer(buffer, (DIMC*COLB));
+  SPI.endTransaction();
+
+  digitalWrite(displayData.latch, HIGH);
+  _NOP();
+  digitalWrite(displayData.latch, LOW);
 }
 
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable){
@@ -80,15 +109,15 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        frame_buffer[i][j] >>= 1;
+        frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          frame_buffer[i][j] |= 128;
+          frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
   }
   //Transmit frame through SPI
-  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
+  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
 	for(int j=0;j<COLB;j++){
@@ -99,64 +128,58 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   SPI.endTransaction();
 
   digitalWrite(latch, HIGH);	//latch new values
-  NOP;
+  _NOP();
   digitalWrite(latch, LOW);
 }
 
-//DEPRECATED FUNCTION!
-void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable){
-  if (!g_bitmap)
+void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
+  if (!(bitmap&&*bitmap))
 		return;
+  if (dimension!=DIMC)
+    return;
 	
   //Compile a frame from the bitmap
   uint8_t frame_buffer[DIMC][COLB];
-  for (int i=0;i<DIMC;i++){
+  for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        frame_buffer[i][j] >>= 1;
-        if ((g_bitmap[i][cnt] & bitmask[mask]))
-          frame_buffer[i][j] |= 128;
+        frame_buffer[i][j] <<= 1;
+        if ((bitmap[i][cnt] & bitmask[mask]))
+          frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
   }
   //Transmit frame through SPI
-  SPI.beginTransaction(SPISettings(SRSPEED, SRORDER, SRMODE));
+  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int j=COLB-1;j>=0;j--){
-		for(int i=DIMC-1;i>=0;i--){
+	for(int j=0;j<COLB;j++){
+		for(int i=0;i<DIMC;i++){
     int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
   SPI.endTransaction();
 
-  digitalWrite(latch, HIGH);	//latch new values
-  NOP;
-  digitalWrite(latch, LOW);
+  digitalWrite(displayData.latch, HIGH);	//latch new values
+  _NOP();
+  digitalWrite(displayData.latch, LOW);
 }
 
-static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
-    buffer <<= 1;
-    if (*address)
-      buffer |= 1;
-    address++;
-  return buffer;
-}
-
-void enableDisplayDimming(uint8_t dimness){
+void FrekvensEnableDisplayDimming(uint8_t dimness){
   if (dimness>0 && dimness<255){
     analogWrite(displayData.enable, dimness);
     return;
   }
+  frekvens_bitmask_index = 8;   //disable masking
   digitalWrite(displayData.enable, LOW);
 }
 
-void enableDisplay(){
+void FrekvensEnableDisplay(){
   digitalWrite(displayData.enable, LOW);
 }
 
-void disableDisplay(){
+void FrekvensDisableDisplay(){
   digitalWrite(displayData.enable, HIGH);
 }

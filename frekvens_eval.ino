@@ -8,11 +8,8 @@
 //-------------------------------------------
 // MACROS
 
-//The starting point of the demo sequence
-#define FIRST_ROUTINE 2
-
 //Higher number means less brightness
-#define DISPLAY_DIMNESS 240
+#define DISPLAY_DIMNESS 0
 
 //-------------------------------------------
 // CONSTANTS
@@ -25,91 +22,85 @@
 // GLOBAL VARIABLES
 
   /**
-  * Direct frame data.
-  * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
-  */
-  uint8_t g_frame[ROWC][COLC];
-
-  /**
   * EXTERNAL VARIABLE
   * Frame bitmap array (from shift.h)
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
 
-  /**
-  * Define semaphores here if needed
-  */
-
-
-  //test routine (demo)
-  int g_routine = FIRST_ROUTINE;
-
 //-------------------------------------------
 // FUNCTION DECLARATIONS
 
-void blank_bitmap(uint8_t (*bitmap)[DIMC], uint8_t dim);
 
-void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols);
 
 //===========================================
 
 void setup() {
+  //-----------------------------------------------------------
+  /*
+  * HARDWARE SPECIFIC CODE
+  * Arduino Uno timer1 configuration
+  * 
+  * Current frequency: 400 Hz
+  * frequency | CSx2-1-0  | OCR
+  * 400 Hz    | 0-1-0     | 2499
+  */
+  cli();  //Clear interrupts
+  TCCR1A = 0; //Timer-Counter Control Register 1A
+  TCCR1B = 0;
+  TCNT1 = 0;  //initialize counter value to 0
+  TCCR1B |= (1<<WGM12);
+  TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
+  OCR1A = 2499; //Output compare register value
+  TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
+  sei();  //Enable interrupts
+  //End timer configuration
+  //-----------------------------------------------------------
+
   Serial.begin(115200);
 
-  if (!attachDisplay(LATCH_PIN, OE_PIN)){
+  if (!FrekvensAttachDisplay(LATCH_PIN, OE_PIN)){
     Serial.println("Display initialization failed!");
     Serial.println("Incorrect pin definitions");
     while(1){}
   }
 
-  disableDisplay();
+  FrekvensDisableDisplay();
 
   SPI.begin();
 
-  blank_bitmap(g_bitmap, DIMC);
-  blank_frame(g_frame, ROWC, COLC);
-
-  enableDisplayDimming(DISPLAY_DIMNESS);
+  FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
 }
 
 //===========================================
 
 void loop() {
-
-#ifdef _DEMO_H_INCLUDED
   //DEMO ROUTINE
-  Serial.print("Demo routine ");
-  Serial.print(g_routine);
-  Serial.println(" running");
-  demo(g_routine);
-  if (g_routine<DEFINED_ROUTINES)
-    g_routine++;
-  else
-    g_routine=FIRST_ROUTINE;
-  blank_bitmap(g_bitmap, DIMC);
-  blank_frame(g_frame, ROWC, COLC);
-  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
-  Serial.println("Demo routine finished");
+  #ifdef _DEMO_H_INCLUDED
+    #ifndef DEMO_INTERRUPT
+      demo(g_routine);
+      if (g_routine<DEFINED_ROUTINES)
+        g_routine++;
+      else
+        g_routine=FIRST_ROUTINE;
+      return; //Break loop here
+    #endif //DEMO_INTERRUPT
+  #endif //_DEMO_H_INCLUDED
   //END DEMO ROUTINE
-#endif
+
 
 }
 
 //-------------------------------------------
 // FUNCTION DEFINITIONS
 
-void blank_bitmap(uint8_t (*bitmap)[DIMC], uint8_t dim){
-  for(int i=0;i<dim;i++){
-    for(int j=0;j<dim;j++){
-      bitmap[i][j]=0;
-    }
-  }
-}
 
-void blank_frame(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols){
-  for(int i=0;i<rows;i++){
-    for(int j=0;j<cols;j++){
-      frame[i][j]=0;
-    }
-  }
+
+//-------------------------------------------
+// INTERRUPT SERVICE ROUTINES
+
+ISR(TIMER1_COMPA_vect){
+  #if defined(_DEMO_H_INCLUDED) && defined(DEMO_INTERRUPT)
+  demoInterrupt();
+  return;
+  #endif
 }
