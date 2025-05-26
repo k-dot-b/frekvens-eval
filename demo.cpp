@@ -59,7 +59,7 @@ void demo(uint8_t routine){
       break;
       //end test routine 1
     
-    //test routine 2: pixel chase - sequential
+    //test routine 2: mrefresh, pixel chase - forward
     case 2:
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
@@ -69,11 +69,11 @@ void demo(uint8_t routine){
       break;
       //end test routine 2
     
-    //test routine 3: pixel chase - reverse
+    //test routine 3: mrefresh2, pixel chase - reverse
     case 3:
       for (int d=PIXEL_MAX;d>0;d--){
         fgen_pixel_picker(g_bitmap, DIMC, d);
-        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+        mrefresh2(g_bitmap, DIMC, 8);
         delay(STEP_DELAY_2);
       }
       break;

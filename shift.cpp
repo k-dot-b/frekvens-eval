@@ -148,15 +148,15 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        i_frame_buffer[i][j] >>= 1;
+        i_frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          i_frame_buffer[i][j] |= 128;
+          i_frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
   }
   //Transmit frame through SPI
-  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, LSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
 	for(int j=0;j<COLB;j++){
@@ -183,15 +183,15 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        i_frame_buffer[i][j] >>= 1;
+        i_frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          i_frame_buffer[i][j] |= 128;
+          i_frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
   }
   //Transmit frame through SPI
-  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, LSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
 	for(int j=0;j<COLB;j++){
