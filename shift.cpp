@@ -171,11 +171,6 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   digitalWrite(latch, LOW);
 }
 
-void tempmrefresh(uint8_t mask){
-  i_map(mask);
-  i_refresh();
-}
-
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
   if (!(bitmap&&*bitmap))
 		return;
