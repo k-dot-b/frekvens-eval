@@ -3,10 +3,6 @@
 
 #include "shift.h"
 
-//NOP instruction
-//inline assembly
-#define NOP __asm__ __volatile__ ("nop\n\t")
-
 //SPISettings parameters
 #define FREKVENS_SRSPEED 125000      //speedMaximum
 
@@ -37,48 +33,18 @@ bool flag_frame_available = true;
 */
 uint8_t frekvens_bitmask_index = 8;
 
+
 //LIMITED SCOPE VARIABLES
+
 uint8_t i_bitmap_buffer[DIMC][DIMC];
-uint8_t i_frame_buffer[DIMC][COLB];
+
 struct displayPhy {
   int latch = 0;
   int enable = 0;
 } displayData;  //Display parameters
+
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
-//Local version of map function
-static inline bool i_map(uint8_t mask){
-  //Compile a frame from the bitmap
-  for (int i=0;i<DIMC;i++){
-    uint8_t cnt = 0;
-    for (int j=0;j<COLB;j++){
-      for (int k=0;k<8;k++){
-        i_frame_buffer[i][j] <<= 1;
-        if ((i_bitmap_buffer[i][cnt] & bitmask[mask]))
-          i_frame_buffer[i][j] |= 1;
-        cnt++;
-      }
-    }
-  }
-  return true;
-}
-
-//Local version of refresh function
-static inline bool i_refresh(){
-  //Transmit the frame through SPI
-  SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
-	for(int j=0;j<COLB;j++){
-		for(int i=0;i<DIMC;i++){
-    int received = SPI.transfer(i_frame_buffer[i][j]);
-		}
-	}
-  SPI.endTransaction();
-  //Latch new data
-  digitalWrite(displayData.latch, HIGH);
-  NOP;
-  digitalWrite(displayData.latch, LOW);
-  return true;
-}
 
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
@@ -102,9 +68,14 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
   if (!flag_bitmap_available)
     return;
 
-  flag_bitmap_available = false;
   memcpy(i_bitmap_buffer, bitmap, DIMC*DIMC);
-  flag_bitmap_available = true;
+}
+
+void FrekvensLoadPixel(uint8_t data, uint8_t row, uint8_t col){
+  if (row>DIMC || col>DIMC)
+    return;
+
+  i_bitmap_buffer[row][col] = data;
 }
 
 void FrekvensRefreshDisplay(){
@@ -132,7 +103,7 @@ void FrekvensRefreshDisplay(){
   SPI.endTransaction();
 
   digitalWrite(displayData.latch, HIGH);
-  NOP;
+  _NOP();
   digitalWrite(displayData.latch, LOW);
 }
 
@@ -143,14 +114,14 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
     return;
 	
   //Compile a frame from the bitmap
-  uint8_t i_frame_buffer[DIMC][COLB];
+  uint8_t frame_buffer[DIMC][COLB];
   for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        i_frame_buffer[i][j] <<= 1;
+        frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          i_frame_buffer[i][j] |= 1;
+          frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
@@ -161,13 +132,13 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   //SRORDER: LSBFIRST
 	for(int j=0;j<COLB;j++){
 		for(int i=0;i<DIMC;i++){
-    int received = SPI.transfer(i_frame_buffer[i][j]);
+    int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
   SPI.endTransaction();
 
   digitalWrite(latch, HIGH);	//latch new values
-  NOP;
+  _NOP();
   digitalWrite(latch, LOW);
 }
 
@@ -178,14 +149,14 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
     return;
 	
   //Compile a frame from the bitmap
-  uint8_t i_frame_buffer[DIMC][COLB];
+  uint8_t frame_buffer[DIMC][COLB];
   for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
-        i_frame_buffer[i][j] <<= 1;
+        frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & bitmask[mask]))
-          i_frame_buffer[i][j] |= 1;
+          frame_buffer[i][j] |= 1;
         cnt++;
       }
     }
@@ -196,23 +167,14 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
   //SRORDER: LSBFIRST
 	for(int j=0;j<COLB;j++){
 		for(int i=0;i<DIMC;i++){
-    int received = SPI.transfer(i_frame_buffer[i][j]);
+    int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
   SPI.endTransaction();
 
   digitalWrite(displayData.latch, HIGH);	//latch new values
-  NOP;
+  _NOP();
   digitalWrite(displayData.latch, LOW);
-}
-
-//Deprecated function!
-static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
-    buffer <<= 1;
-    if (*address)
-      buffer |= 1;
-    address++;
-  return buffer;
 }
 
 void FrekvensEnableDisplayDimming(uint8_t dimness){

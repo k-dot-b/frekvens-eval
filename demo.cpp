@@ -1,10 +1,16 @@
 #include "demo.h"
 
-//NOP instruction
-//inline assembly
-#define NOP __asm__ __volatile__ ("nop\n\t")
-
 uint8_t id = 0;
+
+//Demo routine counter
+int g_routine = FIRST_ROUTINE;
+
+/**
+* DEPRECATED ARRAY
+* Direct frame data.
+* Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
+*/
+uint8_t g_frame[ROWC][COLC];
 
 //DEPRECATED FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
 void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
@@ -24,16 +30,19 @@ void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, 
   SPI.endTransaction();
 
   digitalWrite(latch, HIGH);	//latch new values
-  NOP;
+  _NOP();
   digitalWrite(latch, LOW);
 
   digitalWrite(enable, LOW);	//enable display
 }
 
 void demo(uint8_t routine){
-  if (routine<1 || routine>DEFINED_ROUTINES)
+  if (g_routine<1 || g_routine>DEFINED_ROUTINES)
     return;
-  
+  Serial.print("Demo routine ");
+  Serial.print(g_routine);
+  Serial.println(" running");
+
   //--------------------------------------------------------------------
   // WRITE DEMO ROUTINES HERE AS CASES:
   switch (routine){
@@ -90,6 +99,12 @@ void demo(uint8_t routine){
     default:
       break;
   }
+
+  //Clear display
+  fgen_pixel_picker(g_bitmap, DIMC, 404);
+  mrefresh2(g_bitmap, DIMC, 8);
+
+  Serial.println("Demo routine finished");
   // END OF DEMO ROUTINES
   //--------------------------------------------------------------------
 }

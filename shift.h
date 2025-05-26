@@ -20,8 +20,8 @@
 extern uint8_t g_bitmap[DIMC][DIMC];
 extern uint8_t frekvens_bitmask_index;
 
-//extern bool flag_bitmap_available;
-//extern bool flag_frame_available;
+extern bool flag_bitmap_available;
+extern bool flag_frame_available;
 
 /**
 * Defines the physical connections to the display driver ICs
@@ -32,13 +32,21 @@ extern uint8_t frekvens_bitmask_index;
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 
 /**
-* WIP (part of grayscale image processor)
-* Load a bitmap into the local buffer
+* Load a complete bitmap into the display buffer
 * 
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of bitmap (square matrix).
 */
 void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+
+/**
+* Load data to the specified pixel of the display buffer.
+* 
+* data:   The data to be loaded.
+* row:    Bitmap X coordinate.
+* col:    Bitmap Y coordinate.
+*/
+void FrekvensLoadPixel(uint8_t data, uint8_t row, uint8_t col);
 
 /**
 * Refresh the display with the buffered bitmap.
@@ -49,11 +57,11 @@ void FrekvensRefreshDisplay();
 /**
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
-* *bitmap:  Byte array that contains the image.
-* dimension:      Dimension of bitmap (square matrix).
-* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
-* latch:    Latch pin number.
-* enable:   Output Enable pin number.
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of bitmap (square matrix).
+* mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
+* latch:      Latch pin number.
+* enable:     Output Enable pin number.
 */
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
@@ -65,21 +73,13 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of passed array (must be square!).
 * mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
-* latch:      Latch pin number.
-* enable:     Output Enable pin number.
 */
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
-
-/*
-* //DEPRECATED FUNCTION!
-* Compiles a single byte from eitght consecutive values by address
-*/
-static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 
 /**
 * Enable the display with global PWM dimming via the Output Enable pin.
 * 
-* dimness:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
+* dimness:    Dimness value (1 - 254). A value of '0' '255' or 'false' disables PWM dimming.
 */
 void FrekvensEnableDisplayDimming(uint8_t dimness);
 

@@ -30,17 +30,14 @@
 #define STEP_DELAY_2 30
 
 // EXTERNAL VARIABLES
-  /**
-  * Direct frame data
-  * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
-  */
-  extern uint8_t g_frame[ROWC][COLC];
 
   /**
   * Full frame bitmap
   * Defines a byte for each pixel for grayscale data (future use).
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
+
+  extern int g_routine;
 
   //Pin definitions
   extern const int LATCH_PIN;
