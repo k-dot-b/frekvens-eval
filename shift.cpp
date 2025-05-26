@@ -16,15 +16,9 @@ uint8_t g_bitmap[DIMC][DIMC];
 
 /**
 * GLOBAL FLAG
-* Bitmap buffer access control flag
+* Activity indicator for synchronising display related operations
 */
-bool flag_bitmap_available = true;
-
-/**
-* GLOBAL FLAG
-* Frame buffer access control flag
-*/
-bool flag_frame_available = true;
+bool flag_frekvens_activity = false;
 
 /**
 * GLOBAL VARIABLE
@@ -63,10 +57,6 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
 void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
   if (!(bitmap&&*bitmap) && dimension!=DIMC)
 		return;
-  //if (dimension!=DIMC)
-    //return;
-  if (!flag_bitmap_available)
-    return;
 
   memcpy(i_bitmap_buffer, bitmap, DIMC*DIMC);
 }

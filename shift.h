@@ -20,8 +20,7 @@
 extern uint8_t g_bitmap[DIMC][DIMC];
 extern uint8_t frekvens_bitmask_index;
 
-extern bool flag_bitmap_available;
-extern bool flag_frame_available;
+extern bool flag_frekvens_activity;
 
 /**
 * Defines the physical connections to the display driver ICs
