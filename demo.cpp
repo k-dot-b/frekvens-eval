@@ -83,7 +83,7 @@ void demo(uint8_t routine){
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
         FrekvensLoadBuffer(g_bitmap, DIMC);
-        tempmrefresh(8);
+        FrekvensRefreshDisplay();
         delay(STEP_DELAY_2);
       }
 

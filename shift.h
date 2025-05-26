@@ -16,16 +16,10 @@
 //Display is (COLB x 8) pixels wide
 #define COLB 2
 
-/**
-* GLOBAL VARIABLE
-* Frame bitmap array
-*/
-extern uint8_t g_bitmap[DIMC][DIMC];
 
-/**
-* GLOBAL VARIABLE
-* Buffer access control flags
-*/
+extern uint8_t g_bitmap[DIMC][DIMC];
+extern uint8_t frekvens_bitmask_index;
+
 //extern bool flag_bitmap_available;
 //extern bool flag_frame_available;
 
@@ -39,12 +33,18 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 
 /**
 * WIP (part of grayscale image processor)
-* Load a new bitmap into the local buffer
+* Load a bitmap into the local buffer
 * 
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of bitmap (square matrix).
 */
 void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+
+/**
+* Refresh the display with the buffered bitmap.
+* Masking must be set via global variable 'frekvens_bitmask_index'
+*/
+void FrekvensRefreshDisplay();
 
 /**
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
