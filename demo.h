@@ -15,11 +15,11 @@
 #define VERBOSE_DEMO
 #undef  VERBOSE_DEMO
 //Define this for interrupt-based demo sequence
-#define DEMO_INTERRUPT
+//#define DEMO_INTERRUPT
 //The starting point of the normal demo sequence
-#define FIRST_ROUTINE 2
+#define FIRST_ROUTINE 3
 //Number of defined cases in demo function
-#define DEFINED_ROUTINES 3
+#define DEFINED_ROUTINES 4
 //-------------------------------------------------
 
 #define CLUSTER_DATA  255

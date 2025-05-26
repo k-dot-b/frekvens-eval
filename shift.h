@@ -57,6 +57,8 @@ void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension);
 */
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
+void tempmrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
+
 /**
 * New version of mrefresh() using internal sources for display parameters.
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI.

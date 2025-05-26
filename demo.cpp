@@ -77,6 +77,14 @@ void demo(uint8_t routine){
         delay(STEP_DELAY_2);
       }
       break;
+    
+    //test routine 4: new SPI algorithm, pixel chase - forward
+    case 4:
+      for (int d=PIXEL_MAX;d>0;d--){
+        fgen_pixel_picker(g_bitmap, DIMC, d);
+        tempmrefresh(g_bitmap, DIMC, 8);
+        delay(STEP_DELAY_2);
+      }
 
     default:
       break;
@@ -86,8 +94,8 @@ void demo(uint8_t routine){
 }
 
 void demoInterrupt(){
-    fgen_pixel_picker(g_bitmap, DIMC, id);
-    mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+  fgen_pixel_picker(g_bitmap, DIMC, id);
+  mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
   if (id<255){
     id++;
     return;

@@ -124,6 +124,27 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   digitalWrite(latch, LOW);
 }
 
+void tempmrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
+  if (!(bitmap&&*bitmap))
+		return;
+  if (dimension!=DIMC)
+    return;
+
+  //Compile a frame from the bitmap
+  for (int i=0;i<DIMC;i++){
+    uint8_t cnt = 0;
+    for (int j=0;j<COLB;j++){
+      for (int k=0;k<8;k++){
+        frame_buffer[i][j] <<= 1;
+        if ((bitmap[i][cnt] & bitmask[mask]))
+          frame_buffer[i][j] |= 1;
+        cnt++;
+      }
+    }
+  }
+  i_refresh();
+}
+
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
   if (!(bitmap&&*bitmap))
 		return;
