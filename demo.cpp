@@ -80,9 +80,10 @@ void demo(uint8_t routine){
     
     //test routine 4: new SPI algorithm, pixel chase - forward
     case 4:
-      for (int d=PIXEL_MAX;d>0;d--){
+      for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
-        tempmrefresh(g_bitmap, DIMC, 8);
+        FrekvensLoadBuffer(g_bitmap, DIMC);
+        tempmrefresh(8);
         delay(STEP_DELAY_2);
       }
 

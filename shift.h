@@ -35,7 +35,7 @@ extern uint8_t g_bitmap[DIMC][DIMC];
 * latch_pin:    Latch pin number.
 * enable_pin:   Output Enable pin number.
 */
-bool attachDisplay(int latch_pin, int enable_pin);
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 
 /**
 * WIP (part of grayscale image processor)
@@ -44,7 +44,7 @@ bool attachDisplay(int latch_pin, int enable_pin);
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of bitmap (square matrix).
 */
-void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
 
 /**
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
@@ -57,7 +57,7 @@ void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension);
 */
 void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
-void tempmrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
+void tempmrefresh(uint8_t mask);
 
 /**
 * New version of mrefresh() using internal sources for display parameters.
@@ -83,16 +83,16 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
 * 
 * dimness:      Dimness value (1 - 254). Write 0 or 'false' to disable PWM.
 */
-void enableDisplayDimming(uint8_t dimness);
+void FrekvensEnableDisplayDimming(uint8_t dimness);
 
 /**
 * Enable the display
 */
-void enableDisplay();
+void FrekvensEnableDisplay();
 
 /**
 * Disable the display
 */
-void disableDisplay();
+void FrekvensDisableDisplay();
 
 #endif //FREKVENS_DRIVER_H_INCLUDED

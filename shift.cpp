@@ -62,7 +62,7 @@ static inline bool i_refresh(){
   return true;
 }
 
-bool attachDisplay(int latch_pin, int enable_pin){
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
     return false;
   displayData.latch = latch_pin;
@@ -76,7 +76,7 @@ bool attachDisplay(int latch_pin, int enable_pin){
   return true;
 }
 
-void bufferLoad(uint8_t (*bitmap)[DIMC], uint8_t dimension){
+void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
   if (!(bitmap&&*bitmap) && dimension!=DIMC)
 		return;
   //if (dimension!=DIMC)
@@ -124,24 +124,8 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   digitalWrite(latch, LOW);
 }
 
-void tempmrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
-  if (!(bitmap&&*bitmap))
-		return;
-  if (dimension!=DIMC)
-    return;
-
-  //Compile a frame from the bitmap
-  for (int i=0;i<DIMC;i++){
-    uint8_t cnt = 0;
-    for (int j=0;j<COLB;j++){
-      for (int k=0;k<8;k++){
-        frame_buffer[i][j] <<= 1;
-        if ((bitmap[i][cnt] & bitmask[mask]))
-          frame_buffer[i][j] |= 1;
-        cnt++;
-      }
-    }
-  }
+void tempmrefresh(uint8_t mask){
+  i_map(mask);
   i_refresh();
 }
 
@@ -189,7 +173,7 @@ static inline uint8_t mapb(uint8_t* address, uint8_t buffer){
   return buffer;
 }
 
-void enableDisplayDimming(uint8_t dimness){
+void FrekvensEnableDisplayDimming(uint8_t dimness){
   if (dimness>0 && dimness<255){
     analogWrite(displayData.enable, dimness);
     return;
@@ -197,10 +181,10 @@ void enableDisplayDimming(uint8_t dimness){
   digitalWrite(displayData.enable, LOW);
 }
 
-void enableDisplay(){
+void FrekvensEnableDisplay(){
   digitalWrite(displayData.enable, LOW);
 }
 
-void disableDisplay(){
+void FrekvensDisableDisplay(){
   digitalWrite(displayData.enable, HIGH);
 }
