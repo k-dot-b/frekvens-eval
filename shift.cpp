@@ -4,7 +4,7 @@
 #include "shift.h"
 
 //SPISettings parameters
-#define FREKVENS_SRSPEED 125000      //speedMaximum
+#define FREKVENS_SRSPEED 2000000      //speedMaximum
 
 //GLOBAL VARIABLES
 
