@@ -20,6 +20,8 @@ uint8_t g_bitmap[DIMC][DIMC];
 */
 bool flag_frekvens_activity = false;
 
+const uint8_t frekvens_bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+
 /**
 * GLOBAL VARIABLE
 * Frame mask selector for Binary Code Modulation.

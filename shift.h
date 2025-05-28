@@ -16,8 +16,12 @@
 //Display is (COLB x 8) pixels wide
 #define COLB 2
 
+//Grayscale image bit depth
+#define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
 extern uint8_t g_bitmap[DIMC][DIMC];
+
+extern const uint8_t frekvens_bitmask[9];
 extern uint8_t frekvens_bitmask_index;
 
 extern bool flag_frekvens_activity;
