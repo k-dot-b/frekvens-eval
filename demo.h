@@ -6,7 +6,6 @@
 
 #include <Arduino.h>
 
-#include "params.h"
 #include "shift.h"
 
 //-------------------------------------------------
@@ -67,7 +66,7 @@ void demoInterrupt();
 * segment:    The selected byte of the frame array
 * data:       Data to be written into the segment
 */
-void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data);
+void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data);
 
 /**
 * TEST FUNCTION
@@ -76,6 +75,6 @@ void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int
 * bitmap:     byte array, 16x16
 * pixel:      The selected pixel in the bitmap array
 */
-void fgen_pixel_picker(uint8_t (*bitmap)[ROWC], uint8_t rows, int pixel);
+void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel);
 
 #endif //_DEMO_H_INCLUDED

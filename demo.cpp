@@ -10,7 +10,7 @@ int g_routine = FIRST_ROUTINE;
 * Direct frame data.
 * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
 */
-uint8_t g_frame[ROWC][COLC];
+uint8_t g_frame[DIMC][COLB];
 
 //DEPRECATED FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
 void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
@@ -49,12 +49,12 @@ void demo(uint8_t routine){
     //DEPRECATED test routine 1: cluster stepper - sequential
     case 1:
       for (int d=0;d<CLUSTER_MAX;d++){
-        fgen_cluster_picker(g_frame, ROWC, COLC, d, CLUSTER_DATA);
+        fgen_cluster_picker(g_frame, DIMC, COLB, d, CLUSTER_DATA);
 
         #ifdef VERBOSE_DEMO
         Serial.println("Cluster step frame:");
-        for(int i=0;i<ROWC;i++){
-          for(int j=0;j<COLC;j++){
+        for(int i=0;i<DIMC;i++){
+          for(int j=0;j<COLB;j++){
           Serial.print(g_frame[i][j]);
           Serial.print("		");
           }
@@ -62,7 +62,7 @@ void demo(uint8_t routine){
         }
         #endif
 
-        refresh(g_frame, ROWC, COLC, LATCH_PIN, OE_PIN);
+        refresh(g_frame, DIMC, COLB, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_1);
       }
       break;
@@ -127,7 +127,7 @@ void demoInterrupt(){
   id=0;
 }
 
-void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data){
+void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data){
   if (!(frame&&*frame))
 		return;
 
@@ -144,7 +144,7 @@ void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int
   }
 }
 
-void fgen_pixel_picker(uint8_t (*bitmap)[ROWC], uint8_t rows, int pixel){
+void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel){
   if (!(bitmap&&*bitmap))
 		return;
 
