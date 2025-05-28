@@ -28,7 +28,7 @@
   uint8_t iter_cntr_init = 0;
   uint8_t iter_cntr = 0;
   uint8_t subframe_cntr = 0;
-  uint8_t gray = 7;
+  uint8_t gray = 8;
   bool fade_reverse = false;
 
 //-------------------------------------------
@@ -77,7 +77,7 @@ void setup() {
 
 
   frekvens_bitmask_index = 3;
-  for (int i=0;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
+  for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     iter_cntr_init |= 1<<i;
   }
@@ -135,7 +135,7 @@ void loop() {
   }
   */
   if (flag_frekvens_activity){
-    Serial.println(subframe_cntr);
+    //Serial.println(iter_cntr);
     flag_frekvens_activity=false;
   }
 }
@@ -154,21 +154,23 @@ ISR(TIMER1_COMPA_vect){
   return;
   #endif
 
+  Serial.println(iter_cntr);
+  FrekvensRefreshDisplay();
   if ((iter_cntr & frekvens_bitmask[frekvens_bitmask_index])){
       iter_cntr--;
   }
   else {
-    if (iter_cntr)
+    if (iter_cntr){
       iter_cntr--;
-    else
-      iter_cntr = iter_cntr_init;
-
-    if (frekvens_bitmask_index)
       frekvens_bitmask_index--;
-    else
+    }
+    else {
+      iter_cntr = iter_cntr_init;
       frekvens_bitmask_index = 3; //reset to initial value
+      flag_frekvens_activity = true;  //signal frame completion
+    }
   }
-  FrekvensRefreshDisplay();
+  
 
   if (subframe_cntr < iter_cntr_init)
     subframe_cntr++;
@@ -176,5 +178,5 @@ ISR(TIMER1_COMPA_vect){
     subframe_cntr = 0;
     //flag_frekvens_activity = true;  //signal frame completion
   }
-  flag_frekvens_activity = true;  //signal frame completion
+  
 }
