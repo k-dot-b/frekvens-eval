@@ -13,7 +13,7 @@ int g_routine = FIRST_ROUTINE;
 uint8_t g_frame[DIMC][COLB];
 
 //DEPRECATED FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
-void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
+static void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frame&&*frame))
 		return;
 	
@@ -36,11 +36,29 @@ void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, 
   digitalWrite(enable, LOW);	//enable display
 }
 
+//DEPRECATED TEST FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
+static void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data){
+  if (!(frame&&*frame))
+		return;
+
+  int cnt=0;
+  for(int i=0;i<rows;i++){
+    for(int j=0;j<cols;j++){
+      if (cnt==segment){
+        frame[i][j]=data;
+      }
+      else
+        frame[i][j]=0;
+      cnt++;
+    }
+  }
+}
+
 void demo(uint8_t routine){
-  if (g_routine<1 || g_routine>DEFINED_ROUTINES)
+  if (routine<1 || routine>DEFINED_ROUTINES)
     return;
   Serial.print("Demo routine ");
-  Serial.print(g_routine);
+  Serial.print(routine);
   Serial.println(" running");
 
   //--------------------------------------------------------------------
@@ -68,19 +86,19 @@ void demo(uint8_t routine){
       break;
       //end test routine 1
     
-    //test routine 2: mrefresh2, pixel chase - right
+    //DEPRECATED test routine 2: mrefresh, pixel chase
     case 2:
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
-        mrefresh2(g_bitmap, DIMC, 8);
+        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_2);
       }
       break;
       //end test routine 2
     
-    //test routine 3: mrefresh2, pixel chase - left
+    //test routine 3: mrefresh2, pixel chase -         left
     case 3:
-      for (int d=PIXEL_MAX;d>0;d--){
+      for (int d=PIXEL_MAX-1;d>=0;d--){
         fgen_pixel_picker(g_bitmap, DIMC, d);
         mrefresh2(g_bitmap, DIMC, 8);
         delay(STEP_DELAY_2);
@@ -99,7 +117,7 @@ void demo(uint8_t routine){
       break;
       //end test routine 4
 
-    //test routine 5: LoadPixel, pixel chase - down
+    //test routine 5: LoadPixel, pixel chase -         down
     case 5:
       for (int d=0;d<PIXEL_MAX;d++){
         int cnt = 0;
@@ -117,6 +135,25 @@ void demo(uint8_t routine){
       }
       break;
       //end test routine 5
+
+    //test routine 6: pixel chase -                    up
+    case 6:
+      for (int d=PIXEL_MAX-1;d>=0;d--){
+        int cnt = 0;
+        for (uint8_t j=0;j<DIMC;j++){
+          for (uint8_t i=0;i<DIMC;i++){
+            if (cnt==d)
+              FrekvensLoadPixel(i, j, 255);
+            else
+              FrekvensLoadPixel(i, j, 0);
+            cnt++;
+          }
+        }
+        FrekvensRefreshDisplay();
+        delay(STEP_DELAY_2);
+      }
+      break;
+      //end test routine 6
     
     default:
       break;
@@ -147,23 +184,6 @@ void demoInterrupt(){
     return;
   }
   id=0;
-}
-
-void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data){
-  if (!(frame&&*frame))
-		return;
-
-  int cnt=0;
-  for(int i=0;i<rows;i++){
-    for(int j=0;j<cols;j++){
-      if (cnt==segment){
-        frame[i][j]=data;
-      }
-      else
-        frame[i][j]=0;
-      cnt++;
-    }
-  }
 }
 
 void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel){

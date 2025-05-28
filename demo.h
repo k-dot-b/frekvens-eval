@@ -11,14 +11,14 @@
 //-------------------------------------------------
 // DEMO PARAMETERS
 //Number of defined cases in demo function
-#define DEFINED_ROUTINES 5
+#define DEFINED_ROUTINES 6
 
 //Option for serial output
   //#define VERBOSE_DEMO
 //Define this for interrupt-based demo sequence
   //#define DEMO_INTERRUPT
 //The starting point of the multiDemo sequence
-  #define FIRST_ROUTINE 4
+  #define FIRST_ROUTINE 3
 //-------------------------------------------------
 
 #define CLUSTER_DATA  255
@@ -57,16 +57,6 @@ void multiDemo();
 * Call this from a timer interrupt
 */
 void demoInterrupt();
-
-/**
-* TEST FUNCTION
-* Writes the given data to the selected byte, and fills the rest of the array with zeroes
-* 
-* frame:      byte array, 16x2
-* segment:    The selected byte of the frame array
-* data:       Data to be written into the segment
-*/
-void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data);
 
 /**
 * TEST FUNCTION
