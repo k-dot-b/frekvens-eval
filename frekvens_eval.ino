@@ -154,7 +154,7 @@ ISR(TIMER1_COMPA_vect){
   return;
   #endif
 
-  if (iter_cntr && frekvens_bitmask[frekvens_bitmask_index]){
+  if ((iter_cntr & frekvens_bitmask[frekvens_bitmask_index])){
       iter_cntr--;
   }
   else {
