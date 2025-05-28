@@ -28,7 +28,7 @@
   uint8_t iter_cntr_init = 0;
   uint8_t iter_cntr = 0;
   uint8_t subframe_cntr = 0;
-  uint8_t gray = 0;
+  uint8_t gray = 7;
   bool fade_reverse = false;
 
 //-------------------------------------------
@@ -47,14 +47,15 @@ void setup() {
   * Current frequency: 400 Hz
   * frequency | CSx2-1-0  | OCR
   * 400 Hz    | 0-1-0     | 2499
+  * 1   Hz    | 1-0-1     | 15623
   */
   cli();  //Clear interrupts
   TCCR1A = 0; //Timer-Counter Control Register 1A
   TCCR1B = 0;
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
-  TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
-  OCR1A = 2499; //Output compare register value
+  TCCR1B |= (1<<CS12) | (0<<CS11) | (1<<CS10);
+  OCR1A = 15623; //Output compare register value
   TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
   sei();  //Enable interrupts
   //End timer configuration
@@ -81,6 +82,12 @@ void setup() {
     iter_cntr_init |= 1<<i;
   }
   iter_cntr = iter_cntr_init;
+
+  for (int i=0;i<DIMC;i++){
+    for (int j=0;j<DIMC;j++){
+      FrekvensLoadPixel(i, j, gray);  //load current gray value to whole bitmap
+    }
+  }
 }
 
 //===========================================
@@ -95,6 +102,7 @@ void loop() {
   #endif //_DEMO_H_INCLUDED
   //END DEMO ROUTINE
 
+  /*
   if (flag_frekvens_activity){
     for (int i=0;i<DIMC;i++){
       for (int j=0;j<DIMC;j++){
@@ -121,6 +129,11 @@ void loop() {
     TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
     flag_frekvens_activity = false;
   }
+  */
+  if (flag_frekvens_activity){
+    Serial.println(subframe_cntr);
+    flag_frekvens_activity=false;
+  }
 }
 
 //-------------------------------------------
@@ -138,21 +151,18 @@ ISR(TIMER1_COMPA_vect){
   #endif
 
   if (iter_cntr && frekvens_bitmask[frekvens_bitmask_index]){
-    if (iter_cntr>0)
       iter_cntr--;
-    else
-      iter_cntr = iter_cntr_init;
   }
   else {
-    if (iter_cntr>0)
+    if (iter_cntr)
       iter_cntr--;
     else
       iter_cntr = iter_cntr_init;
 
-    if (frekvens_bitmask_index>0)
+    if (frekvens_bitmask_index)
       frekvens_bitmask_index--;
     else
-      frekvens_bitmask_index = FREKVENS_GRAYSCALE_BIT_DEPTH - 1; //reset to initial value
+      frekvens_bitmask_index = 3; //reset to initial value
   }
   FrekvensRefreshDisplay();
 
@@ -160,6 +170,7 @@ ISR(TIMER1_COMPA_vect){
     subframe_cntr++;
   else {
     subframe_cntr = 0;
-    flag_frekvens_activity = true;  //signal frame completion
+    //flag_frekvens_activity = true;  //signal frame completion
   }
+  flag_frekvens_activity = true;  //signal frame completion
 }
