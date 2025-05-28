@@ -77,12 +77,7 @@ void loop() {
   //DEMO ROUTINE
   #ifdef _DEMO_H_INCLUDED
     #ifndef DEMO_INTERRUPT
-      demo(g_routine);
-      if (g_routine<DEFINED_ROUTINES)
-        g_routine++;
-      else
-        g_routine=FIRST_ROUTINE;
-      return; //Break loop here
+      multiDemo();
     #endif //DEMO_INTERRUPT
   #endif //_DEMO_H_INCLUDED
   //END DEMO ROUTINE

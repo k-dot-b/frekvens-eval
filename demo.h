@@ -11,15 +11,15 @@
 
 //-------------------------------------------------
 // DEMO PARAMETERS
-//Option for serial output
-#define VERBOSE_DEMO
-#undef  VERBOSE_DEMO
-//Define this for interrupt-based demo sequence
-//#define DEMO_INTERRUPT
-//The starting point of the normal demo sequence
-#define FIRST_ROUTINE 3
 //Number of defined cases in demo function
 #define DEFINED_ROUTINES 4
+
+//Option for serial output
+  //#define VERBOSE_DEMO
+//Define this for interrupt-based demo sequence
+  //#define DEMO_INTERRUPT
+//The starting point of the multiDemo sequence
+  #define FIRST_ROUTINE 3
 //-------------------------------------------------
 
 #define CLUSTER_DATA  255
@@ -37,20 +37,22 @@
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
 
-  extern int g_routine;
-
   //Pin definitions
   extern const int LATCH_PIN;
   extern const int OE_PIN;
 
 /**
-* DEMO
 * Calling this function produces a predefined image sequence.
-* Number of routines must be set in DEFINED_ROUTINES macro
 *
 * routine:    ID of requested routine. Write 0 to skip.
 */
 void demo(uint8_t routine);
+
+/**
+* Iterate through multiple demo routines.
+* Number of routines must be set correctly in DEFINED_ROUTINES macro
+*/
+void multiDemo();
 
 /**
 * Call this from a timer interrupt
