@@ -61,7 +61,7 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
   memcpy(i_bitmap_buffer, bitmap, DIMC*DIMC);
 }
 
-void FrekvensLoadPixel(uint8_t data, uint8_t row, uint8_t col){
+void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data){
   if (row>DIMC || col>DIMC)
     return;
 

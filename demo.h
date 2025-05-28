@@ -11,14 +11,14 @@
 //-------------------------------------------------
 // DEMO PARAMETERS
 //Number of defined cases in demo function
-#define DEFINED_ROUTINES 4
+#define DEFINED_ROUTINES 5
 
 //Option for serial output
   //#define VERBOSE_DEMO
 //Define this for interrupt-based demo sequence
   //#define DEMO_INTERRUPT
 //The starting point of the multiDemo sequence
-  #define FIRST_ROUTINE 3
+  #define FIRST_ROUTINE 4
 //-------------------------------------------------
 
 #define CLUSTER_DATA  255

@@ -68,7 +68,7 @@ void demo(uint8_t routine){
       break;
       //end test routine 1
     
-    //test routine 2: mrefresh2, pixel chase - forward
+    //test routine 2: mrefresh2, pixel chase - right
     case 2:
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
@@ -78,7 +78,7 @@ void demo(uint8_t routine){
       break;
       //end test routine 2
     
-    //test routine 3: mrefresh2, pixel chase - reverse
+    //test routine 3: mrefresh2, pixel chase - left
     case 3:
       for (int d=PIXEL_MAX;d>0;d--){
         fgen_pixel_picker(g_bitmap, DIMC, d);
@@ -86,8 +86,9 @@ void demo(uint8_t routine){
         delay(STEP_DELAY_2);
       }
       break;
+      //end test routine 3
     
-    //test routine 4: new SPI algorithm, pixel chase - forward
+    //test routine 4: new SPI algorithm, pixel chase - right
     case 4:
       for (int d=0;d<PIXEL_MAX;d++){
         fgen_pixel_picker(g_bitmap, DIMC, d);
@@ -95,7 +96,28 @@ void demo(uint8_t routine){
         FrekvensRefreshDisplay();
         delay(STEP_DELAY_2);
       }
+      break;
+      //end test routine 4
 
+    //test routine 5: LoadPixel, pixel chase - down
+    case 5:
+      for (int d=0;d<PIXEL_MAX;d++){
+        int cnt = 0;
+        for (uint8_t j=0;j<DIMC;j++){
+          for (uint8_t i=0;i<DIMC;i++){
+            if (cnt==d)
+              FrekvensLoadPixel(i, j, 255);
+            else
+              FrekvensLoadPixel(i, j, 0);
+            cnt++;
+          }
+        }
+        FrekvensRefreshDisplay();
+        delay(STEP_DELAY_2);
+      }
+      break;
+      //end test routine 5
+    
     default:
       break;
   }
