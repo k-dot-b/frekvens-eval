@@ -1,92 +1,95 @@
 // frekvens_driver.h
 // Display driver for FREKVENS LED array
 
+#ifndef FREKVENS_DRIVER_H_INCLUDED
+#define FREKVENS_DRIVER_H_INCLUDED
+
 #include <Arduino.h>
+#ifndef _SPI_H_INCLUDED
 #include <SPI.h>
+#endif
 
-//NOP instruction
-//inline assembly
-#define NOP __asm__ __volatile__ ("nop\n\t")
-
-//Common dimension (rows)
-//Display is (DIMC) pixels tall
+//Common dimension of display related arrays (rows and columns)
+//Display is square with (DIMC) pixels on all sides
 #define DIMC 16
-//Column count for the frame buffer
+//Column count of the frame buffer array
 //Display is (COLB x 8) pixels wide
 #define COLB 2
 
-//SPISettings parameters
-#define SRSPEED 125000      //speedMaximum
-#define SRORDER LSBFIRST    //dataOrder
-#define SRMODE SPI_MODE0    //dataMode
+
+extern uint8_t g_bitmap[DIMC][DIMC];
+extern uint8_t frekvens_bitmask_index;
+
+extern bool flag_frekvens_activity;
 
 /**
-* GLOBAL VARIABLE
-* Frame bitmap array
-*/
-extern uint8_t g_bitmap[DIMC][DIMC];
-
-/*
-* //DEPRECATED FUNCTION!
-* Transmits the frame to the LED drivers via SPI
+* Defines the physical connections to the display driver ICs
 *
-* frame:    byte array, 16x2
-* rows:     array row count
-* cols:     array column count
-* latch:    Latch pin number
-* enable:   Output Enable pin number
+* latch_pin:    Latch pin number.
+* enable_pin:   Output Enable pin number.
 */
-void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable);
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 
-/*
-* //DEPRECATED FUNCTION!
-* Converts a bitmap into a direct frame for transmission
-*
-* bitmap:   byte array, 16x16
-* frame:    byte array, 16x2
-* rows:     array row count (bitmap and frame)
-* cols:     array column count (frame)
+/**
+* Load a complete bitmap into the display buffer
+* 
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of bitmap (square matrix).
 */
-bool map(uint8_t (*bitmap)[DIMC], uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols);
+void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+
+/**
+* Load data to the specified pixel of the display buffer.
+* 
+* row:    Bitmap X coordinate.
+* col:    Bitmap Y coordinate.
+* data:   The data to be loaded.
+*/
+void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
+
+/**
+* Refresh the display with the buffered bitmap.
+* Masking must be set via global variable 'frekvens_bitmask_index'
+*/
+void FrekvensRefreshDisplay();
 
 /**
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
-* *bitmap:  Byte array that contains the image.
-* dim:      Dimension of bitmap (square matrix).
-* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
-* latch:    Latch pin number.
-* enable:   Output Enable pin number.
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of bitmap (square matrix).
+* mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
+* latch:      Latch pin number.
+* enable:     Output Enable pin number.
 */
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dim, uint8_t mask, uint8_t latch, uint8_t enable);
-
-/*
-* //DEPRECATED FUNCTION!
-* Compiles the frame from the global bitmap and transmits it to the LED drivers via SPI
-*
-* mask:     Bitmask for grayscale processing. Write 8 to prevent masking.
-* latch:    Latch pin number.
-* enable:   Output Enable pin number.
-*/
-void gmrefresh(uint8_t mask, uint8_t latch, uint8_t enable);
-
-/*
-* //DEPRECATED FUNCTION!
-* Compiles a single byte from eitght consecutive values by address
-*/
-static inline uint8_t mapb(uint8_t* address, uint8_t buffer);
+void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /**
-* Dim the display by applying PWM to the Output Enable pin.
+* New version of mrefresh() using internal sources for display parameters.
+* Compiles the frame from the bitmap and transmits it to the LED drivers via SPI.
+* "map-and-refresh"
+*
+* *bitmap:    Byte array that contains the image.
+* dimension:  Dimension of passed array (must be square!).
+* mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
+*/
+void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
+
+/**
+* Enable the display with global PWM dimming via the Output Enable pin.
 * 
-* oe_pin:   Output Enable pin number.
-* dim:      Dimness value (1 - 254). Write 0 to disable PWM.
+* dimness:    Dimness value (1 - 254). A value of '0' '255' or 'false' disables PWM dimming.
 */
-void enableDisplay(int oe_pin, uint8_t dim);
+void FrekvensEnableDisplayDimming(uint8_t dimness);
 
 /**
-* Disable the display via the Output Enable pin
-*
-* oe_pin:   Output Enable pin number.
+* Enable the display
 */
-void disableDisplay(int oe_pin);
+void FrekvensEnableDisplay();
+
+/**
+* Disable the display
+*/
+void FrekvensDisableDisplay();
+
+#endif //FREKVENS_DRIVER_H_INCLUDED

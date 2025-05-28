@@ -4,15 +4,22 @@
 #ifndef _DEMO_H_INCLUDED
 #define _DEMO_H_INCLUDED
 
-#define VERBOSE_DEMO
-#undef  VERBOSE_DEMO
-
 #include <Arduino.h>
 
-#include "params.h"
 #include "shift.h"
 
-#define DEFINED_ROUTINES 3
+//-------------------------------------------------
+// DEMO PARAMETERS
+//Number of defined cases in demo function
+#define DEFINED_ROUTINES 6
+
+//Option for serial output
+  //#define VERBOSE_DEMO
+//Define this for interrupt-based demo sequence
+  //#define DEMO_INTERRUPT
+//The starting point of the multiDemo sequence
+  #define FIRST_ROUTINE 3
+//-------------------------------------------------
 
 #define CLUSTER_DATA  255
 #define CLUSTER_MAX 32
@@ -22,11 +29,6 @@
 #define STEP_DELAY_2 30
 
 // EXTERNAL VARIABLES
-  /**
-  * Direct frame data
-  * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
-  */
-  extern uint8_t g_frame[ROWC][COLC];
 
   /**
   * Full frame bitmap
@@ -39,23 +41,22 @@
   extern const int OE_PIN;
 
 /**
-* DEMO
 * Calling this function produces a predefined image sequence.
-* Number of routines must be set in DEFINED_ROUTINES macro
 *
-* routine:    ID of requested routine.
+* routine:    ID of requested routine. Write 0 to skip.
 */
 void demo(uint8_t routine);
 
 /**
-* TEST FUNCTION
-* Writes the given data to the selected byte, and fills the rest of the array with zeroes
-* 
-* frame:      byte array, 16x2
-* segment:    The selected byte of the frame array
-* data:       Data to be written into the segment
+* Iterate through multiple demo routines.
+* Number of routines must be set correctly in DEFINED_ROUTINES macro
 */
-void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int segment, uint8_t data);
+void multiDemo();
+
+/**
+* Call this from a timer interrupt
+*/
+void demoInterrupt();
 
 /**
 * TEST FUNCTION
@@ -64,6 +65,6 @@ void fgen_cluster_picker(uint8_t (*frame)[COLC], uint8_t rows, uint8_t cols, int
 * bitmap:     byte array, 16x16
 * pixel:      The selected pixel in the bitmap array
 */
-void fgen_pixel_picker(uint8_t (*bitmap)[ROWC], uint8_t rows, int pixel);
+void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel);
 
 #endif //_DEMO_H_INCLUDED
