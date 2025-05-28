@@ -30,12 +30,12 @@ uint8_t frekvens_bitmask_index = 8;
 
 //LIMITED SCOPE VARIABLES
 
-uint8_t i_bitmap_buffer[DIMC][DIMC];
-
 struct displayPhy {
   int latch = 0;
   int enable = 0;
-} displayData;  //Display parameters
+} displayData;  //Display control pins
+
+uint8_t i_bitmap_buffer[DIMC][DIMC];
 
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
@@ -168,12 +168,8 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
 }
 
 void FrekvensEnableDisplayDimming(uint8_t dimness){
-  if (dimness>0 && dimness<255){
-    analogWrite(displayData.enable, dimness);
-    return;
-  }
   frekvens_bitmask_index = 8;   //disable masking
-  digitalWrite(displayData.enable, LOW);
+  analogWrite(displayData.enable, dimness);
 }
 
 void FrekvensEnableDisplay(){
