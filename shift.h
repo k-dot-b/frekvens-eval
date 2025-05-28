@@ -41,11 +41,11 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
 /**
 * Load data to the specified pixel of the display buffer.
 * 
-* data:   The data to be loaded.
 * row:    Bitmap X coordinate.
 * col:    Bitmap Y coordinate.
+* data:   The data to be loaded.
 */
-void FrekvensLoadPixel(uint8_t data, uint8_t row, uint8_t col);
+void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
 
 /**
 * Refresh the display with the buffered bitmap.

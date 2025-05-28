@@ -1,7 +1,6 @@
 // FREKVENS LED display project
 // Evaluation program
 
-#include "params.h"
 #include "shift.h"
 #include "demo.h"
 
@@ -13,7 +12,6 @@
 
 //-------------------------------------------
 // CONSTANTS
-  //frame dimensions ROWC and COLC must be defined as macros in params.h
 
   const int LATCH_PIN = 8;  //Latch, falling edge triggered
   const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
@@ -77,12 +75,8 @@ void loop() {
   //DEMO ROUTINE
   #ifdef _DEMO_H_INCLUDED
     #ifndef DEMO_INTERRUPT
-      demo(g_routine);
-      if (g_routine<DEFINED_ROUTINES)
-        g_routine++;
-      else
-        g_routine=FIRST_ROUTINE;
-      return; //Break loop here
+      demo(0);
+      multiDemo();
     #endif //DEMO_INTERRUPT
   #endif //_DEMO_H_INCLUDED
   //END DEMO ROUTINE
