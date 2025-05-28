@@ -26,6 +26,8 @@ extern uint8_t frekvens_bitmask_index;
 
 extern bool flag_frekvens_activity;
 
+uint8_t debug_read_buffer(uint8_t row, uint8_t col);
+
 /**
 * Defines the physical connections to the display driver ICs
 *

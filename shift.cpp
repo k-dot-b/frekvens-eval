@@ -42,6 +42,10 @@ uint8_t i_bitmap_buffer[DIMC][DIMC];
 static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
 
+uint8_t debug_read_buffer(uint8_t row, uint8_t col){
+  return i_bitmap_buffer[row][col];
+}
+
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
     return false;

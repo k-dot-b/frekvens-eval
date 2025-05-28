@@ -84,10 +84,14 @@ void setup() {
   iter_cntr = iter_cntr_init;
 
   for (int i=0;i<DIMC;i++){
+    Serial.println();
     for (int j=0;j<DIMC;j++){
       FrekvensLoadPixel(i, j, gray);  //load current gray value to whole bitmap
+      Serial.print(debug_read_buffer(i, j));
+      Serial.print(" ");
     }
   }
+  Serial.println();
 }
 
 //===========================================
