@@ -35,12 +35,16 @@
 //-------------------------------------------
 // FUNCTION DECLARATIONS
 
-
+#if defined (__AVR_ATmega328P__)
+static inline void disableInterruptOC1A();
+static inline void enableInterruptOC1A();
+#endif //__AVR_ATmega328P__
 
 //===========================================
 
 void setup() {
   //-----------------------------------------------------------
+  #if defined (__AVR_ATmega328P__)
   /*
   * HARDWARE SPECIFIC CODE
   * Arduino Uno timer1 configuration
@@ -60,9 +64,11 @@ void setup() {
   TCCR1B |= (1<<WGM12);
   TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
   OCR1A = 1249; //Output compare register value
-  TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
+  //Disable interrupts by default:
+  TIMSK1 = (0<<ICIE1) | (0<<OCIE1B) | (0<<OCIE1A) | (0<<TOIE1);
   sei();  //Enable interrupts
   //End timer configuration
+  #endif //AVR_ATmega328P
   //-----------------------------------------------------------
 
   Serial.begin(115200);
@@ -72,23 +78,14 @@ void setup() {
     Serial.println("Incorrect pin definitions");
     while(1){}
   }
-
   FrekvensDisableDisplay();
 
   SPI.begin();
 
-  FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
+  //FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
+  FrekvensEnableDisplayGrayscale();
+  enableInterruptOC1A();
 
-/*
-  for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
-    //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
-    FrekvensBCM.iter_max |= 1<<i;
-  }
-  FrekvensBCM.iter_index = FrekvensBCM.iter_max;
-  FrekvensBCM.bitmask_max = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
-  FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
-  flag_frekvens_activity=true;  //This is required to compute a frame immediately after program start (mom, the compiler is optimizing out useful code again!)
-*/
 }
 
 //===========================================
@@ -146,11 +143,25 @@ void loop() {
 //-------------------------------------------
 // FUNCTION DEFINITIONS
 
-
+#if defined (__AVR_ATmega328P__)
+static inline void disableInterruptOC1A(){
+  cli();
+  TIMSK1  &= ~(1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+}
+static inline void enableInterruptOC1A(){
+  cli();
+  TIMSK1  |= (1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+}
+#endif //__AVR_ATmega328P__
 
 //-------------------------------------------
 // INTERRUPT SERVICE ROUTINES
 
+#if defined (__AVR_ATmega328P__)
 ISR(TIMER1_COMPA_vect){
   #if defined(_DEMO_H_INCLUDED) && defined(DEMO_INTERRUPT)
   demoInterrupt();
@@ -173,3 +184,4 @@ ISR(TIMER1_COMPA_vect){
     }
   }
 }
+#endif //__AVR_ATmega328P__

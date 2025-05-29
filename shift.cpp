@@ -193,6 +193,7 @@ void FrekvensEnableDisplayDimming(uint8_t dimness){
 }
 
 void FrekvensEnableDisplayStatic(){
+  FrekvensBCM.bitmask_index = 8;   //disable masking
   digitalWrite(displayData.enable, LOW);
 }
 
