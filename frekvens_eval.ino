@@ -31,7 +31,11 @@
   volatile int fade_cntr = 0;
   volatile bool fade_reverse = false;
 
-  int ri, rj;
+  volatile uint8_t gray2 = 0;
+  volatile int fade_cntr2 = 0;
+  volatile bool fade_reverse2 = false;
+
+  int ri, rj, ri2, rj2;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
@@ -112,12 +116,15 @@ void loop() {
       for (int j=0;j<DIMC;j++){
         if (i==ri && j==rj)
           FrekvensLoadPixel(i, j, gray);
+        else if (i==ri2 && j==rj2)
+          FrekvensLoadPixel(i, j, gray2);
         else
           FrekvensLoadPixel(i, j, 0);
       }
     }
 
     #ifdef FADE_DISPLAY_DEMO
+    //pixel 1
     if (fade_cntr<FADE_PRESCALER){
       fade_cntr++;
     }
@@ -132,13 +139,39 @@ void loop() {
           fade_reverse = true;
       }
       else{
-        if (gray>1){  //never fade to black entirely
+        if (gray>0){  //never fade to black entirely
           gray--;
         }
         else {
           fade_reverse = false;
           ri = random(0, 15);
           rj = random(0, 15);
+        }
+      }
+    }
+
+    //pixel 2
+    if (fade_cntr2<FADE_PRESCALER+1){
+      fade_cntr2++;
+    }
+    else {
+      fade_cntr2 = 0;
+      //generate pulsating 'gray' value
+      if (!fade_reverse2){
+        if (gray2<15){
+          gray2++;
+        }
+        else
+          fade_reverse2 = true;
+      }
+      else{
+        if (gray2>0){  //never fade to black entirely
+          gray2--;
+        }
+        else {
+          fade_reverse2 = false;
+          ri2 = random(0, 15);
+          rj2 = random(0, 15);
         }
       }
     }
