@@ -10,6 +10,9 @@
 //Higher number means less brightness
 #define DISPLAY_DIMNESS 0
 
+#define FADE_PRESCALER 12
+#define FADE_DISPLAY_DEMO
+
 //-------------------------------------------
 // CONSTANTS
 
@@ -25,8 +28,9 @@
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
 
-  uint8_t gray = 0;
-  bool fade_reverse = false;
+  volatile uint8_t gray = 0;
+  volatile int fade_cntr = 0;
+  volatile bool fade_reverse = false;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
@@ -41,9 +45,12 @@ void setup() {
   * HARDWARE SPECIFIC CODE
   * Arduino Uno timer1 configuration
   * 
-  * Current frequency: 400 Hz
+  * Current frequency: 1600 Hz
   * frequency | CSx2-1-0  | OCR
-  * 400 Hz    | 0-1-0     | 2499
+  * 1600 Hz   | 0-1-0     | 1249    BEST EXPERIENCE
+  * 1200 Hz   | 0-1-0     | 1666
+  * 1000 Hz   | 0-1-0     | 1999
+  * 800 Hz    | 0-1-0     | 2499
   * 1   Hz    | 1-0-1     | 15623
   */
   cli();  //Clear interrupts
@@ -51,8 +58,8 @@ void setup() {
   TCCR1B = 0;
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
-  TCCR1B |= (1<<CS12) | (0<<CS11) | (1<<CS10);
-  OCR1A = 7812; //Output compare register value
+  TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
+  OCR1A = 1249; //Output compare register value
   TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
   sei();  //Enable interrupts
   //End timer configuration
@@ -101,33 +108,39 @@ void loop() {
     //This segment triggers after each frame
     
     //Fill bitmap with 'gray' value
-    Serial.print("frame: ");
-    Serial.println(gray);
     for (int i=0;i<DIMC;i++){
       for (int j=0;j<DIMC;j++){
         FrekvensLoadPixel(i, j, gray);
       }
     }
 
-    //generate pulsating 'gray' value
-    if (!fade_reverse){
-      if (gray<15){
-        gray++;
-      }
-      else
-        fade_reverse = true;
+    #ifdef FADE_DISPLAY_DEMO
+    if (fade_cntr<FADE_PRESCALER){
+      fade_cntr++;
     }
-    else{
-      if (gray>0){
-        gray--;
+    else {
+      fade_cntr = 0;
+      //generate pulsating 'gray' value
+      if (!fade_reverse){
+        if (gray<15){
+          gray++;
+        }
+        else
+          fade_reverse = true;
       }
-      else
-        fade_reverse = false;
+      else{
+        if (gray>1){  //never fade to black entirely
+          gray--;
+        }
+        else
+          fade_reverse = false;
+      }
     }
+    #endif
 
     flag_frekvens_activity=false;
   }
-  
+
 }
 
 //-------------------------------------------
@@ -144,9 +157,6 @@ ISR(TIMER1_COMPA_vect){
   return;
   #endif
 
-  Serial.print(FrekvensBCM.iter_index);
-  Serial.print("  ");
-  Serial.println(FrekvensBCM.bitmask_index);
   FrekvensRefreshDisplay();
   if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
       FrekvensBCM.iter_index--;
