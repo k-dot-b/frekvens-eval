@@ -25,7 +25,7 @@
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
 
-  uint8_t gray = 8;
+  uint8_t gray = 0;
   bool fade_reverse = false;
 
 //-------------------------------------------
@@ -52,7 +52,7 @@ void setup() {
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
   TCCR1B |= (1<<CS12) | (0<<CS11) | (1<<CS10);
-  OCR1A = 3906; //Output compare register value
+  OCR1A = 7812; //Output compare register value
   TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
   sei();  //Enable interrupts
   //End timer configuration
@@ -96,48 +96,23 @@ void loop() {
   #endif //_DEMO_H_INCLUDED
   //END DEMO ROUTINE
 
-  /*
-  if (flag_frekvens_activity){
-    for (int i=0;i<DIMC;i++){
-      for (int j=0;j<DIMC;j++){
-        FrekvensLoadPixel(i, j, gray);  //load current gray value to whole bitmap
-      }
-    }
-    
-    if (!fade_reverse){
-      if (gray<255)
-        gray++;
-      else
-        fade_reverse = true;
-    }
-    else{
-      if (gray>0)
-        gray--;
-      else
-        fade_reverse = false;
-    }
-
-    flag_frekvens_activity = false;
-  }
-  */
 
   if (flag_frekvens_activity){
     //This segment triggers after each frame
     
     //Fill bitmap with 'gray' value
+    Serial.print("frame: ");
+    Serial.println(gray);
     for (int i=0;i<DIMC;i++){
       for (int j=0;j<DIMC;j++){
         FrekvensLoadPixel(i, j, gray);
       }
     }
 
-    /*
     //generate pulsating 'gray' value
-    Serial.print("frame: ");
     if (!fade_reverse){
       if (gray<15){
         gray++;
-        Serial.println(gray);
       }
       else
         fade_reverse = true;
@@ -145,15 +120,14 @@ void loop() {
     else{
       if (gray>0){
         gray--;
-        Serial.println(gray);
       }
       else
         fade_reverse = false;
     }
-    */
 
     flag_frekvens_activity=false;
   }
+  
 }
 
 //-------------------------------------------
