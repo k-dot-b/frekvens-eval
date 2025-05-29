@@ -9,7 +9,7 @@
 
 #define DISPLAY_DIMNESS 128
 
-#define FADE_PRESCALER 12
+#define FADE_PRESCALER 6
 #define FADE_DISPLAY_DEMO
 
 //-------------------------------------------
@@ -30,6 +30,8 @@
   volatile uint8_t gray = 0;
   volatile int fade_cntr = 0;
   volatile bool fade_reverse = false;
+
+  int ri, rj;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
@@ -86,6 +88,7 @@ void setup() {
   FrekvensEnableDisplayGrayscale();
   enableInterruptOC1A();
 
+  randomSeed(analogRead(A2));
 }
 
 //===========================================
@@ -107,7 +110,10 @@ void loop() {
     //Fill bitmap with 'gray' value
     for (int i=0;i<DIMC;i++){
       for (int j=0;j<DIMC;j++){
-        FrekvensLoadPixel(i, j, gray);
+        if (i==ri && j==rj)
+          FrekvensLoadPixel(i, j, gray);
+        else
+          FrekvensLoadPixel(i, j, 0);
       }
     }
 
@@ -129,8 +135,11 @@ void loop() {
         if (gray>1){  //never fade to black entirely
           gray--;
         }
-        else
+        else {
           fade_reverse = false;
+          ri = random(0, 15);
+          rj = random(0, 15);
+        }
       }
     }
     #endif
