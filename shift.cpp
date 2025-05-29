@@ -59,7 +59,7 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   digitalWrite(enable_pin, LOW);  //Enable display
 
   //Grayscale parameters
-  for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
+  for (uint8_t i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     FrekvensBCM.iter_max |= 1<<i;
   }
@@ -87,16 +87,16 @@ void FrekvensRefreshDisplay(){
   uint8_t buffer[DIMC*COLB];
   uint8_t cnt = 0;
 
-  for (int i=0;i<DIMC;i++){
-    for (int j=0;j<8;j++){    //read bits 0-7 in every row
+  for (uint8_t i=0;i<DIMC;i++){
+    for (uint8_t j=0;j<8;j++){    //read bits 0-7 in every row
       buffer[cnt] <<= 1;
       if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
         buffer[cnt] |= 1;
       }
     cnt++;
   }
-  for (int i=0;i<DIMC;i++){
-    for (int j=8;j<16;j++){   //read bits 8-15 in every row
+  for (uint8_t i=0;i<DIMC;i++){
+    for (uint8_t j=8;j<16;j++){   //read bits 8-15 in every row
       buffer[cnt] <<= 1;
       if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
         buffer[cnt] |= 1;
