@@ -27,7 +27,6 @@
 
   uint8_t iter_cntr_init = 0;
   uint8_t iter_cntr = 0;
-  uint8_t subframe_cntr = 0;
   uint8_t gray = 8;
   bool fade_reverse = false;
 
@@ -77,12 +76,17 @@ void setup() {
 
 
   frekvens_bitmask_index = 3;
+
   for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     iter_cntr_init |= 1<<i;
   }
-  iter_cntr = iter_cntr_init;
 
+  iter_cntr = iter_cntr_init;
+  
+  flag_frekvens_activity=true;  //This is required to compute a frame immediately after program start (mom, the compiler is optimizing out useful code again!)
+
+  /*
   for (int i=0;i<DIMC;i++){
     Serial.println();
     for (int j=0;j<DIMC;j++){
@@ -92,6 +96,7 @@ void setup() {
     }
   }
   Serial.println();
+  */
 }
 
 //===========================================
@@ -127,15 +132,20 @@ void loop() {
         fade_reverse = false;
     }
 
-    TIMSK1 |= (0<<OCIE1A);  //Disable output compare interrupt
-    iter_cntr = iter_cntr_init;   //this is super sketchy code, probably better to do this straight in the interrupt
-    frekvens_bitmask_index = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
-    TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
     flag_frekvens_activity = false;
   }
   */
+
   if (flag_frekvens_activity){
-    //Serial.println(iter_cntr);
+    //This segment triggers after each frame
+    
+    //Fill bitmap with 'gray' value
+    for (int i=0;i<DIMC;i++){
+      for (int j=0;j<DIMC;j++){
+        FrekvensLoadPixel(i, j, gray);
+      }
+    }
+
     flag_frekvens_activity=false;
   }
 }
@@ -165,18 +175,10 @@ ISR(TIMER1_COMPA_vect){
       frekvens_bitmask_index--;
     }
     else {
-      iter_cntr = iter_cntr_init;
-      frekvens_bitmask_index = 3; //reset to initial value
+      iter_cntr = iter_cntr_init;     //reload counter
+      frekvens_bitmask_index = 3;     //reload bitmask
       flag_frekvens_activity = true;  //signal frame completion
     }
-  }
-  
-
-  if (subframe_cntr < iter_cntr_init)
-    subframe_cntr++;
-  else {
-    subframe_cntr = 0;
-    //flag_frekvens_activity = true;  //signal frame completion
   }
   
 }
