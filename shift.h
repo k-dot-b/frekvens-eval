@@ -19,13 +19,6 @@
 //Grayscale image bit depth
 #define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
-extern uint8_t g_bitmap[DIMC][DIMC];
-
-extern const uint8_t frekvens_bitmask[9];
-extern uint8_t frekvens_bitmask_index;
-
-extern bool flag_frekvens_activity;
-
 struct displayBCM {
   uint8_t iter_max = 0;
   uint8_t iter_index = 0;
@@ -33,6 +26,12 @@ struct displayBCM {
   uint8_t bitmask_index = 8;
   const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 };
+
+
+extern uint8_t g_bitmap[DIMC][DIMC];
+
+extern bool flag_frekvens_activity;
+extern displayBCM FrekvensBCM;
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
@@ -63,7 +62,7 @@ void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
 
 /**
 * Refresh the display with the buffered bitmap.
-* Masking must be set via global variable 'frekvens_bitmask_index'
+* Masking must be set via global variable 'FrekvensBCM.bitmask_index'
 */
 void FrekvensRefreshDisplay();
 

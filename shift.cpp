@@ -20,17 +20,15 @@ uint8_t g_bitmap[DIMC][DIMC];
 */
 bool flag_frekvens_activity = false;
 
-const uint8_t frekvens_bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
-
 /**
-* GLOBAL VARIABLE
-* Frame mask selector for Binary Code Modulation.
-* Default value of '8' disables masking
-*/
-uint8_t frekvens_bitmask_index = 8;
-
-/**
-* Contains all global parameters for the BCM algorithm
+* GLOBAL STRUCT
+* Contains all global parameters for the Binary Code Modulation algorithm
+* 
+* .iter_max         Number of required iterations. Depends on bit depth.
+* .iter_index       Iteration counter.
+* .bitmask_max      Default index value. Depends on bit depth.
+* .bitmask_index    Frame mask selector. Default value of '8' disables masking.
+* .bitmask[9]       Constant array with binary masking values
 */
 struct displayBCM FrekvensBCM;
 
@@ -42,8 +40,6 @@ struct displayPhy {
 } displayData;  //Display control pins
 
 uint8_t i_bitmap_buffer[DIMC][DIMC];
-
-static const uint8_t bitmask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col){
@@ -85,7 +81,7 @@ void FrekvensRefreshDisplay(){
   for (int i=0;i<DIMC;i++){
     for (int j=0;j<8;j++){    //read bits 0-7 in every row
       buffer[cnt] <<= 1;
-      if ((i_bitmap_buffer[i][j] & bitmask[frekvens_bitmask_index]))
+      if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
         buffer[cnt] |= 1;
       }
     cnt++;
@@ -93,7 +89,7 @@ void FrekvensRefreshDisplay(){
   for (int i=0;i<DIMC;i++){
     for (int j=8;j<16;j++){   //read bits 8-15 in every row
       buffer[cnt] <<= 1;
-      if ((i_bitmap_buffer[i][j] & bitmask[frekvens_bitmask_index]))
+      if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
         buffer[cnt] |= 1;
       }
     cnt++;
@@ -120,7 +116,7 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
-        if ((bitmap[i][cnt] & bitmask[mask]))
+        if ((bitmap[i][cnt] & FrekvensBCM.bitmask[mask]))
           frame_buffer[i][j] |= 1;
         cnt++;
       }
@@ -155,7 +151,7 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
     for (int j=0;j<COLB;j++){
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
-        if ((bitmap[i][cnt] & bitmask[mask]))
+        if ((bitmap[i][cnt] & FrekvensBCM.bitmask[mask]))
           frame_buffer[i][j] |= 1;
         cnt++;
       }
@@ -178,7 +174,7 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
 }
 
 void FrekvensEnableDisplayDimming(uint8_t dimness){
-  frekvens_bitmask_index = 8;   //disable masking
+  FrekvensBCM.bitmask_index = 8;   //disable masking
   analogWrite(displayData.enable, dimness);
 }
 
