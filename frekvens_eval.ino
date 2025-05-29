@@ -62,7 +62,8 @@ void setup() {
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
   TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
-  OCR1A = 1249; //Output compare register value
+  OCR1A = 1249; // 1600Hz subframe refresh frequency
+  OCR1B = 1999; // 1000Hz / 1ms intervals, millis() substitute
   //Disable interrupts by default:
   TIMSK1 = (0<<ICIE1) | (0<<OCIE1B) | (0<<OCIE1A) | (0<<TOIE1);
   sei();  //Enable interrupts
