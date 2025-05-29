@@ -183,6 +183,7 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
 }
 
 void FrekvensEnableDisplayGrayscale(){
+  FrekvensBCM.iter_index = FrekvensBCM.iter_max;
   FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
   digitalWrite(displayData.enable, LOW);
 }

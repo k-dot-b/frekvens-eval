@@ -89,7 +89,9 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
 
 /**
-* WIP
+* Preload BCM parameters.
+* WARNING! BCM is interrupt dependent!
+* Timer interrupt must be configured separately.
 */
 void FrekvensEnableDisplayGrayscale();
 

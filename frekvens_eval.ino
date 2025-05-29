@@ -7,8 +7,7 @@
 //-------------------------------------------
 // MACROS
 
-//Higher number means less brightness
-#define DISPLAY_DIMNESS 0
+#define DISPLAY_DIMNESS 128
 
 #define FADE_PRESCALER 12
 #define FADE_DISPLAY_DEMO
