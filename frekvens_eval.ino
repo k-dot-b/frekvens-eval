@@ -2,15 +2,12 @@
 // Evaluation program
 
 #include "shift.h"
-//#include "demo.h"
+#include "demo.h"
 
 //-------------------------------------------
 // MACROS
 
-#define DISPLAY_DIMNESS 128
 
-#define FADE_PRESCALER 12
-#define FADE_DISPLAY_DEMO
 
 //-------------------------------------------
 // CONSTANTS
@@ -26,10 +23,6 @@
   * Frame bitmap array (from shift.h)
   */
   extern uint8_t g_bitmap[DIMC][DIMC];
-
-  volatile uint8_t gray = 0;
-  volatile int fade_cntr = 0;
-  volatile bool fade_reverse = false;
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
@@ -82,7 +75,8 @@ void setup() {
 
   SPI.begin();
 
-  //FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
+  //FrekvensEnableDisplayDimming(128);
+  
   FrekvensEnableDisplayGrayscale();
   enableInterruptOC1A();
 
@@ -91,51 +85,11 @@ void setup() {
 //===========================================
 
 void loop() {
-  //DEMO ROUTINE
-  #ifdef _DEMO_H_INCLUDED
-    #ifndef DEMO_INTERRUPT
-      demo(0);
-      multiDemo();
-    #endif //DEMO_INTERRUPT
-  #endif //_DEMO_H_INCLUDED
-  //END DEMO ROUTINE
 
 
   if (flag_frekvens_activity){
-    //This segment triggers after each frame
-    
-    //Fill bitmap with 'gray' value
-    for (int i=0;i<DIMC;i++){
-      for (int j=0;j<DIMC;j++){
-        FrekvensLoadPixel(i, j, gray);
-      }
-    }
-
-    #ifdef FADE_DISPLAY_DEMO
-    if (fade_cntr<FADE_PRESCALER){
-      fade_cntr++;
-    }
-    else {
-      fade_cntr = 0;
-      //generate pulsating 'gray' value
-      if (!fade_reverse){
-        if (gray<15){
-          gray++;
-        }
-        else
-          fade_reverse = true;
-      }
-      else{
-        if (gray>1){  //never fade to black entirely
-          gray--;
-        }
-        else
-          fade_reverse = false;
-      }
-    }
-    #endif
-
-    flag_frekvens_activity=false;
+    //Code here will run after each complete frame draw
+    demoGrayscale();
   }
 
 }
@@ -163,12 +117,9 @@ static inline void enableInterruptOC1A(){
 
 #if defined (__AVR_ATmega328P__)
 ISR(TIMER1_COMPA_vect){
-  #if defined(_DEMO_H_INCLUDED) && defined(DEMO_INTERRUPT)
-  demoInterrupt();
-  return;
-  #endif
 
   FrekvensRefreshDisplay();
+
   if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
       FrekvensBCM.iter_index--;
   }
