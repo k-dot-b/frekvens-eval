@@ -29,6 +29,10 @@ const uint8_t frekvens_bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0
 */
 uint8_t frekvens_bitmask_index = 8;
 
+/**
+* Contains all global parameters for the BCM algorithm
+*/
+struct displayBCM FrekvensBCM;
 
 //LIMITED SCOPE VARIABLES
 

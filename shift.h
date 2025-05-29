@@ -26,6 +26,14 @@ extern uint8_t frekvens_bitmask_index;
 
 extern bool flag_frekvens_activity;
 
+struct displayBCM {
+  uint8_t iter_max = 0;
+  uint8_t iter_index = 0;
+  uint8_t bitmask_max = 0;
+  uint8_t bitmask_index = 8;
+  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+};
+
 uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
 /**
