@@ -79,16 +79,16 @@ void setup() {
 
   FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
 
-
+/*
   for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     FrekvensBCM.iter_max |= 1<<i;
   }
   FrekvensBCM.iter_index = FrekvensBCM.iter_max;
   FrekvensBCM.bitmask_max = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
-  FrekvensBCM.bitmask_index= FrekvensBCM.bitmask_max;
+  FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
   flag_frekvens_activity=true;  //This is required to compute a frame immediately after program start (mom, the compiler is optimizing out useful code again!)
-
+*/
 }
 
 //===========================================
@@ -167,9 +167,9 @@ ISR(TIMER1_COMPA_vect){
       FrekvensBCM.bitmask_index--;
     }
     else {
-      FrekvensBCM.iter_index = FrekvensBCM.iter_max;  //reload counter
-      FrekvensBCM.bitmask_index = 3;                  //reload bitmask
-      flag_frekvens_activity = true;                  //signal frame completion
+      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
+      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
+      flag_frekvens_activity = true;                        //signal frame completion
     }
   }
 }

@@ -89,16 +89,21 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
 
 /**
+* WIP
+*/
+void FrekvensEnableDisplayGrayscale();
+
+/**
 * Enable the display with global PWM dimming via the Output Enable pin.
 * 
-* dimness:    Dimness value (1 - 254). A value of '0' '255' or 'false' disables PWM dimming.
+* dimness:    Dimness value (0-255). Higher number means darker display.
 */
 void FrekvensEnableDisplayDimming(uint8_t dimness);
 
 /**
 * Enable the display
 */
-void FrekvensEnableDisplay();
+void FrekvensEnableDisplayStatic();
 
 /**
 * Disable the display

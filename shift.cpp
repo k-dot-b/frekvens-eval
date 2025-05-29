@@ -57,6 +57,15 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
 
   digitalWrite(latch_pin, LOW);
   digitalWrite(enable_pin, LOW);  //Enable display
+
+  //Grayscale parameters
+  for (int i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
+    //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
+    FrekvensBCM.iter_max |= 1<<i;
+  }
+  FrekvensBCM.iter_index = FrekvensBCM.iter_max;
+  FrekvensBCM.bitmask_max = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
+
   return true;
 }
 
@@ -173,12 +182,17 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
   digitalWrite(displayData.latch, LOW);
 }
 
+void FrekvensEnableDisplayGrayscale(){
+  FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
+  digitalWrite(displayData.enable, LOW);
+}
+
 void FrekvensEnableDisplayDimming(uint8_t dimness){
   FrekvensBCM.bitmask_index = 8;   //disable masking
   analogWrite(displayData.enable, dimness);
 }
 
-void FrekvensEnableDisplay(){
+void FrekvensEnableDisplayStatic(){
   digitalWrite(displayData.enable, LOW);
 }
 
