@@ -75,7 +75,7 @@ void setup() {
 
   SPI.begin();
 
-  //FrekvensEnableDisplayDimming(128);
+  //FrekvensEnableDisplayDimming(0);
   
   FrekvensEnableDisplayGrayscale();
   enableInterruptOC1A();
@@ -86,11 +86,14 @@ void setup() {
 
 void loop() {
 
-
   if (flag_frekvens_activity){
-    //Code here will run after each complete frame draw
+    //This segment will run after each complete frame draw
+    //Update the frame buffer here to prevent screen tear
     demoGrayscale();
+
+    flag_frekvens_activity = false;
   }
+
 
 }
 
