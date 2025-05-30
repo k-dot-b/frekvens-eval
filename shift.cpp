@@ -43,6 +43,9 @@ uint8_t i_bitmap_buffer[DIMC][DIMC];
 
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col){
+  if (row>DIMC || col>DIMC)
+    return 0;
+  
   return i_bitmap_buffer[row][col];
 }
 
