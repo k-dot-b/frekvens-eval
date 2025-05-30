@@ -5,6 +5,8 @@ uint8_t id = 0;
 //Demo routine counter
 int g_routine = FIRST_ROUTINE;
 
+fadeObject demo_fade_image {0, 6, 0, false};
+
 /**
 * DEPRECATED ARRAY
 * Direct frame data.
@@ -184,6 +186,37 @@ void demoInterrupt(){
     return;
   }
   id=0;
+}
+
+void demoGrayscale(){
+
+  //version: fullscreen image fade
+  for (int i=0;i<DIMC;i++){
+    for (int j=0;j<DIMC;j++){
+      FrekvensLoadPixel(i, j, demo_fade_image.gray);
+    }
+  }
+  if (demo_fade_image.fade_cntr<demo_fade_image.fade_prescaler){
+    demo_fade_image.fade_cntr++;
+  }
+  else {
+    demo_fade_image.fade_cntr = 0;
+    //generate pulsating 'demo_fade_image.gray' value
+    if (!demo_fade_image.fade_reverse){
+      if (demo_fade_image.gray<15){
+        demo_fade_image.gray++;
+      }
+      else
+        demo_fade_image.fade_reverse = true;
+    }
+    else{
+      if (demo_fade_image.gray>1){  //never fade to black entirely
+        demo_fade_image.gray--;
+      }
+      else
+        demo_fade_image.fade_reverse = false;
+    }
+  }
 }
 
 void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel){

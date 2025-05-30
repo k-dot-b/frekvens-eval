@@ -16,11 +16,24 @@
 //Display is (COLB x 8) pixels wide
 #define COLB 2
 
+//Grayscale image bit depth
+#define FREKVENS_GRAYSCALE_BIT_DEPTH 4
+
+struct displayBCM {
+  uint8_t iter_max = 0;
+  volatile uint8_t iter_index = 0;
+  uint8_t bitmask_max = 0;
+  volatile uint8_t bitmask_index = 8;
+  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+};
+
 
 extern uint8_t g_bitmap[DIMC][DIMC];
-extern uint8_t frekvens_bitmask_index;
 
-extern bool flag_frekvens_activity;
+extern volatile bool flag_frekvens_activity;
+extern displayBCM FrekvensBCM;
+
+uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
 /**
 * Defines the physical connections to the display driver ICs
@@ -49,7 +62,7 @@ void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
 
 /**
 * Refresh the display with the buffered bitmap.
-* Masking must be set via global variable 'frekvens_bitmask_index'
+* Masking must be set via global variable 'FrekvensBCM.bitmask_index'
 */
 void FrekvensRefreshDisplay();
 
@@ -76,16 +89,23 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
 
 /**
+* Preload BCM parameters.
+* WARNING! BCM is interrupt dependent!
+* Timer interrupt must be configured separately.
+*/
+void FrekvensEnableDisplayGrayscale();
+
+/**
 * Enable the display with global PWM dimming via the Output Enable pin.
 * 
-* dimness:    Dimness value (1 - 254). A value of '0' '255' or 'false' disables PWM dimming.
+* dimness:    Dimness value (0-255). Higher number means darker display.
 */
 void FrekvensEnableDisplayDimming(uint8_t dimness);
 
 /**
 * Enable the display
 */
-void FrekvensEnableDisplay();
+void FrekvensEnableDisplayStatic();
 
 /**
 * Disable the display

@@ -7,8 +7,7 @@
 //-------------------------------------------
 // MACROS
 
-//Higher number means less brightness
-#define DISPLAY_DIMNESS 0
+
 
 //-------------------------------------------
 // CONSTANTS
@@ -28,19 +27,27 @@
 //-------------------------------------------
 // FUNCTION DECLARATIONS
 
-
+#if defined (__AVR_ATmega328P__)
+static inline void disableInterruptOC1A();
+static inline void enableInterruptOC1A();
+#endif //__AVR_ATmega328P__
 
 //===========================================
 
 void setup() {
   //-----------------------------------------------------------
+  #if defined (__AVR_ATmega328P__)
   /*
   * HARDWARE SPECIFIC CODE
   * Arduino Uno timer1 configuration
   * 
-  * Current frequency: 400 Hz
+  * Current frequency: 1600 Hz
   * frequency | CSx2-1-0  | OCR
-  * 400 Hz    | 0-1-0     | 2499
+  * 1600 Hz   | 0-1-0     | 1249    BEST EXPERIENCE
+  * 1200 Hz   | 0-1-0     | 1666
+  * 1000 Hz   | 0-1-0     | 1999
+  * 800 Hz    | 0-1-0     | 2499
+  * 1   Hz    | 1-0-1     | 15623
   */
   cli();  //Clear interrupts
   TCCR1A = 0; //Timer-Counter Control Register 1A
@@ -48,10 +55,13 @@ void setup() {
   TCNT1 = 0;  //initialize counter value to 0
   TCCR1B |= (1<<WGM12);
   TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
-  OCR1A = 2499; //Output compare register value
-  TIMSK1 |= (1<<OCIE1A);  //Enable output compare interrupt
+  OCR1A = 1249; // 1600Hz subframe refresh frequency
+  OCR1B = 1999; // 1000Hz / 1ms intervals, millis() substitute
+  //Disable interrupts by default:
+  TIMSK1 = (0<<ICIE1) | (0<<OCIE1B) | (0<<OCIE1A) | (0<<TOIE1);
   sei();  //Enable interrupts
   //End timer configuration
+  #endif //AVR_ATmega328P
   //-----------------------------------------------------------
 
   Serial.begin(115200);
@@ -61,25 +71,28 @@ void setup() {
     Serial.println("Incorrect pin definitions");
     while(1){}
   }
-
   FrekvensDisableDisplay();
 
   SPI.begin();
 
-  FrekvensEnableDisplayDimming(DISPLAY_DIMNESS);
+  //FrekvensEnableDisplayDimming(0);
+  
+  FrekvensEnableDisplayGrayscale();
+  enableInterruptOC1A();
+
 }
 
 //===========================================
 
 void loop() {
-  //DEMO ROUTINE
-  #ifdef _DEMO_H_INCLUDED
-    #ifndef DEMO_INTERRUPT
-      demo(0);
-      multiDemo();
-    #endif //DEMO_INTERRUPT
-  #endif //_DEMO_H_INCLUDED
-  //END DEMO ROUTINE
+
+  if (flag_frekvens_activity){
+    //This segment will run after each complete frame draw
+    //Update the frame buffer here to prevent screen tear
+    demoGrayscale();
+
+    flag_frekvens_activity = false;
+  }
 
 
 }
@@ -87,14 +100,42 @@ void loop() {
 //-------------------------------------------
 // FUNCTION DEFINITIONS
 
-
+#if defined (__AVR_ATmega328P__)
+static inline void disableInterruptOC1A(){
+  cli();
+  TIMSK1  &= ~(1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+}
+static inline void enableInterruptOC1A(){
+  cli();
+  TIMSK1  |= (1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+}
+#endif //__AVR_ATmega328P__
 
 //-------------------------------------------
 // INTERRUPT SERVICE ROUTINES
 
+#if defined (__AVR_ATmega328P__)
 ISR(TIMER1_COMPA_vect){
-  #if defined(_DEMO_H_INCLUDED) && defined(DEMO_INTERRUPT)
-  demoInterrupt();
-  return;
-  #endif
+
+  FrekvensRefreshDisplay();
+
+  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
+      FrekvensBCM.iter_index--;
+  }
+  else {
+    if (FrekvensBCM.iter_index){
+      FrekvensBCM.iter_index--;
+      FrekvensBCM.bitmask_index--;
+    }
+    else {
+      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
+      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
+      flag_frekvens_activity = true;                        //signal frame completion
+    }
+  }
 }
+#endif //__AVR_ATmega328P__

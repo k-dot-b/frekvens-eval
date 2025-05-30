@@ -28,6 +28,15 @@
 #define STEP_DELAY_1 240
 #define STEP_DELAY_2 30
 
+struct fadeObject {
+  volatile uint8_t gray;
+  uint8_t fade_prescaler;
+  volatile int fade_cntr;
+  volatile bool fade_reverse;
+};
+
+extern fadeObject demo_fade_image;
+
 // EXTERNAL VARIABLES
 
   /**
@@ -57,6 +66,11 @@ void multiDemo();
 * Call this from a timer interrupt
 */
 void demoInterrupt();
+
+/**
+* 
+*/
+void demoGrayscale();
 
 /**
 * TEST FUNCTION
