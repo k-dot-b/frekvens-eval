@@ -10,11 +10,11 @@
 #endif
 
 //Common dimension of display related arrays (rows and columns)
-//Display is square with (DIMC) pixels on all sides
-#define DIMC 16
+//Display is square with (FREKVENS_DIMC) pixels on all sides
+#define FREKVENS_DIMC 16
 //Column count of the frame buffer array
-//Display is (COLB x 8) pixels wide
-#define COLB 2
+//Display is (FREKVENS_COLB x 8) pixels wide
+#define FREKVENS_COLB 2
 
 //Grayscale image bit depth
 #define FREKVENS_GRAYSCALE_BIT_DEPTH 4
@@ -27,10 +27,7 @@ struct displayBCM {
   const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 };
 
-
-extern uint8_t g_bitmap[DIMC][DIMC];
-
-extern volatile bool flag_frekvens_activity;
+extern volatile bool frekvens_vsync_ready;
 extern displayBCM FrekvensBCM;
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col);
@@ -49,7 +46,7 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of bitmap (square matrix).
 */
-void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension);
+void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension);
 
 /**
 * Load data to the specified pixel of the display buffer.
@@ -75,7 +72,7 @@ void FrekvensRefreshDisplay();
 * latch:      Latch pin number.
 * enable:     Output Enable pin number.
 */
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
+void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /**
 * New version of mrefresh() using internal sources for display parameters.
@@ -86,7 +83,7 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
 * dimension:  Dimension of passed array (must be square!).
 * mask:       Bitmask for grayscale processing. Write 8 to prevent masking.
 */
-void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask);
+void mrefresh2(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask);
 
 /**
 * Preload BCM parameters.
