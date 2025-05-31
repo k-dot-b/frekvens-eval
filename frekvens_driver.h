@@ -23,7 +23,8 @@ extern volatile bool frekvens_vsync_ready;
 
 
 /**
-* Defines the physical connections to the display driver ICs
+* Initializes the necessary peripherals and variables.
+* return:       true if successful; false otherwise
 *
 * latch_pin:    Latch pin number.
 * enable_pin:   Output Enable pin number.

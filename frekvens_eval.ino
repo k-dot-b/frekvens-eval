@@ -32,7 +32,6 @@ void setup() {
 
   if (!FrekvensAttachDisplay(LATCH_PIN, OE_PIN)){
     Serial.println("Display initialization failed!");
-    Serial.println("Incorrect pin definitions");
     while(1){}
   }
   FrekvensEnableDisplayGrayscale();
