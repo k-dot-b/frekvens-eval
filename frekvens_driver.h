@@ -19,16 +19,7 @@
 //Grayscale image bit depth
 #define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
-struct displayBCM {
-  uint8_t iter_max = 0;
-  volatile uint8_t iter_index = 0;
-  uint8_t bitmask_max = 0;
-  volatile uint8_t bitmask_index = 8;
-  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
-};
-
 extern volatile bool frekvens_vsync_ready;
-extern displayBCM FrekvensBCM;
 
 
 /**

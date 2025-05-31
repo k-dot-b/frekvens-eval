@@ -14,17 +14,6 @@
 */
 volatile bool frekvens_vsync_ready = false;
 
-/**
-* GLOBAL STRUCT
-* Contains all global parameters for the Binary Code Modulation algorithm
-* 
-* .iter_max         Number of required iterations. Depends on bit depth.
-* .iter_index       Iteration counter.
-* .bitmask_max      Default index value. Depends on bit depth.
-* .bitmask_index    Frame mask selector. Default value of '8' disables masking.
-* .bitmask[9]       Constant array with binary masking values
-*/
-struct displayBCM FrekvensBCM;
 
 //LIMITED SCOPE VARIABLES
 
@@ -32,6 +21,21 @@ struct displayPhy {
   int latch = 0;
   int enable = 0;
 } displayPins;  //Display control pins
+
+/* displayBCM: parameters for the Binary Code Modulation algorithm.
+* .iter_max         Number of required iterations. Depends on bit depth.
+* .iter_index       Iteration counter.
+* .bitmask_max      Default index value. Depends on bit depth.
+* .bitmask_index    Frame mask selector. Default value of '8' disables masking.
+* .bitmask[9]       Constant array with binary masking values
+*/
+struct displayBCM {
+  uint8_t iter_max = 0;
+  volatile uint8_t iter_index = 0;
+  uint8_t bitmask_max = 0;
+  volatile uint8_t bitmask_index = 8;
+  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+} FrekvensBCM;
 
 uint8_t i_bitmap_buffer[FREKVENS_DIMC][FREKVENS_DIMC];
 
