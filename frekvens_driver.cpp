@@ -35,7 +35,13 @@ struct displayPhy {
 
 uint8_t i_bitmap_buffer[FREKVENS_DIMC][FREKVENS_DIMC];
 
+//Static function declarations
+static inline void configureInterruptTimer();
+static inline void disableInterruptTimer();
+static inline void enableInterruptTimer();
 
+//-------------------------------------------------------------
+// Frekvens Driver function definitions
 uint8_t debug_read_buffer(uint8_t row, uint8_t col){
   if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
     return 0;
@@ -46,6 +52,8 @@ uint8_t debug_read_buffer(uint8_t row, uint8_t col){
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
     return false;
+
+  SPI.begin();
   displayPins.latch = latch_pin;
   displayPins.enable = enable_pin;
 
@@ -62,6 +70,8 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   }
   FrekvensBCM.iter_index = FrekvensBCM.iter_max;
   FrekvensBCM.bitmask_max = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
+
+  configureInterruptTimer();
 
   return true;
 }
@@ -183,18 +193,68 @@ void FrekvensEnableDisplayGrayscale(){
   FrekvensBCM.iter_index = FrekvensBCM.iter_max;
   FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
   digitalWrite(displayPins.enable, LOW);
+  enableInterruptTimer();
 }
 
 void FrekvensEnableDisplayDimming(uint8_t dimness){
+  disableInterruptTimer();
   FrekvensBCM.bitmask_index = 8;   //disable masking
   analogWrite(displayPins.enable, dimness);
 }
 
 void FrekvensEnableDisplayStatic(){
+  disableInterruptTimer();
   FrekvensBCM.bitmask_index = 8;   //disable masking
   digitalWrite(displayPins.enable, LOW);
 }
 
 void FrekvensDisableDisplay(){
+  disableInterruptTimer();
   digitalWrite(displayPins.enable, HIGH);
+}
+
+//-------------------------------------------------------------
+// HARDWARE SPECIFIC FUNCTIONS
+
+static inline void configureInterruptTimer(){
+  //-----------------------------------------------------------
+  #if defined (__AVR_ATmega328P__)
+  /*
+  * Arduino Uno timer1
+  * 
+  * frequency | CSx2-1-0  | OCR
+  * 1600 Hz   | 0-1-0     | 1249
+  */
+  cli();  //Clear interrupts
+  TCCR1A = 0; //Timer-Counter Control Register 1A
+  TCCR1B = 0;
+  TCNT1 = 0;  //initialize counter value to 0
+  TCCR1B |= (1<<WGM12);
+  TCCR1B |= (0<<CS12) | (1<<CS11) | (0<<CS10);
+  OCR1A = 1249; // 1600Hz subframe refresh frequency
+  OCR1B = 1999; // 1000Hz / 1ms intervals, millis() substitute
+  //Disable interrupts by default:
+  TIMSK1 = (0<<ICIE1) | (0<<OCIE1B) | (0<<OCIE1A) | (0<<TOIE1);
+  sei();  //Enable interrupts
+  //End timer configuration
+  #endif //AVR_ATmega328P
+  //-----------------------------------------------------------
+}
+
+static inline void disableInterruptTimer(){
+  #if defined (__AVR_ATmega328P__)
+  cli();
+  TIMSK1  &= ~(1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+  #endif //__AVR_ATmega328P__
+}
+
+static inline void enableInterruptTimer(){
+  #if defined (__AVR_ATmega328P__)
+  cli();
+  TIMSK1  |= (1<<OCIE1A);
+  TIFR1   |= (1<<OCF1A);
+  sei();
+  #endif //__AVR_ATmega328P__
 }
