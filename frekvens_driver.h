@@ -30,7 +30,6 @@ struct displayBCM {
 extern volatile bool frekvens_vsync_ready;
 extern displayBCM FrekvensBCM;
 
-uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
 /**
 * Defines the physical connections to the display driver ICs
@@ -56,6 +55,15 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension);
 * data:   The data to be loaded.
 */
 void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
+
+/**
+* Read data from the specified pixel of the display buffer.
+* return: Pixel data
+* 
+* row:    Bitmap X coordinate.
+* col:    Bitmap Y coordinate.
+*/
+uint8_t FrekvensReadPixel(uint8_t row, uint8_t col);
 
 /**
 * Refresh the display with the buffered bitmap.

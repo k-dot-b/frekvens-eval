@@ -42,12 +42,6 @@ static inline void enableInterruptTimer();
 
 //-------------------------------------------------------------
 // Frekvens Driver function definitions
-uint8_t debug_read_buffer(uint8_t row, uint8_t col){
-  if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
-    return 0;
-  
-  return i_bitmap_buffer[row][col];
-}
 
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
@@ -88,6 +82,13 @@ void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data){
     return;
 
   i_bitmap_buffer[row][col] = data;
+}
+
+uint8_t FrekvensReadPixel(uint8_t row, uint8_t col){
+  if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
+    return 0;
+  
+  return i_bitmap_buffer[row][col];
 }
 
 void FrekvensRefreshDisplay(){
