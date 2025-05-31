@@ -37,7 +37,7 @@ struct displayBCM FrekvensBCM;
 struct displayPhy {
   int latch = 0;
   int enable = 0;
-} displayData;  //Display control pins
+} displayPins;  //Display control pins
 
 uint8_t i_bitmap_buffer[FREKVENS_DIMC][FREKVENS_DIMC];
 
@@ -52,8 +52,8 @@ uint8_t debug_read_buffer(uint8_t row, uint8_t col){
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   if (latch_pin==enable_pin)
     return false;
-  displayData.latch = latch_pin;
-  displayData.enable = enable_pin;
+  displayPins.latch = latch_pin;
+  displayPins.enable = enable_pin;
 
   pinMode(latch_pin, OUTPUT);
   pinMode(enable_pin, OUTPUT);
@@ -110,9 +110,9 @@ void FrekvensRefreshDisplay(){
   SPI.transfer(buffer, (FREKVENS_DIMC*FREKVENS_COLB));
   SPI.endTransaction();
 
-  digitalWrite(displayData.latch, HIGH);
+  digitalWrite(displayPins.latch, HIGH);
   _NOP();
-  digitalWrite(displayData.latch, LOW);
+  digitalWrite(displayPins.latch, LOW);
 }
 
 void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable){
@@ -180,27 +180,27 @@ void mrefresh2(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask
 	}
   SPI.endTransaction();
 
-  digitalWrite(displayData.latch, HIGH);	//latch new values
+  digitalWrite(displayPins.latch, HIGH);	//latch new values
   _NOP();
-  digitalWrite(displayData.latch, LOW);
+  digitalWrite(displayPins.latch, LOW);
 }
 
 void FrekvensEnableDisplayGrayscale(){
   FrekvensBCM.iter_index = FrekvensBCM.iter_max;
   FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;
-  digitalWrite(displayData.enable, LOW);
+  digitalWrite(displayPins.enable, LOW);
 }
 
 void FrekvensEnableDisplayDimming(uint8_t dimness){
   FrekvensBCM.bitmask_index = 8;   //disable masking
-  analogWrite(displayData.enable, dimness);
+  analogWrite(displayPins.enable, dimness);
 }
 
 void FrekvensEnableDisplayStatic(){
   FrekvensBCM.bitmask_index = 8;   //disable masking
-  digitalWrite(displayData.enable, LOW);
+  digitalWrite(displayPins.enable, LOW);
 }
 
 void FrekvensDisableDisplay(){
-  digitalWrite(displayData.enable, HIGH);
+  digitalWrite(displayPins.enable, HIGH);
 }
