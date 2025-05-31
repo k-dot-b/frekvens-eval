@@ -12,7 +12,7 @@
 * DEPRECATED GLOBAL VARIABLE
 * Frame bitmap array
 */
-uint8_t g_bitmap[DIMC][DIMC];
+uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
 /**
 * GLOBAL FLAG
@@ -39,11 +39,11 @@ struct displayPhy {
   int enable = 0;
 } displayData;  //Display control pins
 
-uint8_t i_bitmap_buffer[DIMC][DIMC];
+uint8_t i_bitmap_buffer[FREKVENS_DIMC][FREKVENS_DIMC];
 
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col){
-  if (row>DIMC || col>DIMC)
+  if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
     return 0;
   
   return i_bitmap_buffer[row][col];
@@ -72,25 +72,25 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   return true;
 }
 
-void FrekvensLoadBuffer(uint8_t (*bitmap)[DIMC], uint8_t dimension){
-  if (!(bitmap&&*bitmap) && dimension!=DIMC)
+void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension){
+  if (!(bitmap&&*bitmap) && dimension!=FREKVENS_DIMC)
 		return;
 
-  memcpy(i_bitmap_buffer, bitmap, DIMC*DIMC);
+  memcpy(i_bitmap_buffer, bitmap, FREKVENS_DIMC*FREKVENS_DIMC);
 }
 
 void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data){
-  if (row>DIMC || col>DIMC)
+  if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
     return;
 
   i_bitmap_buffer[row][col] = data;
 }
 
 void FrekvensRefreshDisplay(){
-  uint8_t buffer[DIMC*COLB];
+  uint8_t buffer[FREKVENS_DIMC*FREKVENS_COLB];
   uint8_t cnt = 0;
 
-  for (uint8_t i=0;i<DIMC;i++){
+  for (uint8_t i=0;i<FREKVENS_DIMC;i++){
     for (uint8_t j=0;j<8;j++){    //read bits 0-7 in every row
       buffer[cnt] <<= 1;
       if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
@@ -98,7 +98,7 @@ void FrekvensRefreshDisplay(){
       }
     cnt++;
   }
-  for (uint8_t i=0;i<DIMC;i++){
+  for (uint8_t i=0;i<FREKVENS_DIMC;i++){
     for (uint8_t j=8;j<16;j++){   //read bits 8-15 in every row
       buffer[cnt] <<= 1;
       if ((i_bitmap_buffer[i][j] & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index]))
@@ -107,7 +107,7 @@ void FrekvensRefreshDisplay(){
     cnt++;
   }
   SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
-  SPI.transfer(buffer, (DIMC*COLB));
+  SPI.transfer(buffer, (FREKVENS_DIMC*FREKVENS_COLB));
   SPI.endTransaction();
 
   digitalWrite(displayData.latch, HIGH);
@@ -115,17 +115,17 @@ void FrekvensRefreshDisplay(){
   digitalWrite(displayData.latch, LOW);
 }
 
-void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable){
+void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable){
 	if (!(bitmap&&*bitmap))
 		return;
-  if (dimension!=DIMC)
+  if (dimension!=FREKVENS_DIMC)
     return;
 	
   //Compile a frame from the bitmap
-  uint8_t frame_buffer[DIMC][COLB];
+  uint8_t frame_buffer[FREKVENS_DIMC][FREKVENS_COLB];
   for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
-    for (int j=0;j<COLB;j++){
+    for (int j=0;j<FREKVENS_COLB;j++){
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & FrekvensBCM.bitmask[mask]))
@@ -138,8 +138,8 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int j=0;j<COLB;j++){
-		for(int i=0;i<DIMC;i++){
+	for(int j=0;j<FREKVENS_COLB;j++){
+		for(int i=0;i<FREKVENS_DIMC;i++){
     int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}
@@ -150,17 +150,17 @@ void mrefresh(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask, uint8_t 
   digitalWrite(latch, LOW);
 }
 
-void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
+void mrefresh2(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask){
   if (!(bitmap&&*bitmap))
 		return;
-  if (dimension!=DIMC)
+  if (dimension!=FREKVENS_DIMC)
     return;
 	
   //Compile a frame from the bitmap
-  uint8_t frame_buffer[DIMC][COLB];
+  uint8_t frame_buffer[FREKVENS_DIMC][FREKVENS_COLB];
   for (int i=0;i<dimension;i++){
     uint8_t cnt = 0;
-    for (int j=0;j<COLB;j++){
+    for (int j=0;j<FREKVENS_COLB;j++){
       for (int k=0;k<8;k++){
         frame_buffer[i][j] <<= 1;
         if ((bitmap[i][cnt] & FrekvensBCM.bitmask[mask]))
@@ -173,8 +173,8 @@ void mrefresh2(uint8_t (*bitmap)[DIMC], uint8_t dimension, uint8_t mask){
   SPI.beginTransaction(SPISettings(FREKVENS_SRSPEED, MSBFIRST, SPI_MODE0));
 	//Last value first
   //SRORDER: LSBFIRST
-	for(int j=0;j<COLB;j++){
-		for(int i=0;i<DIMC;i++){
+	for(int j=0;j<FREKVENS_COLB;j++){
+		for(int i=0;i<FREKVENS_DIMC;i++){
     int received = SPI.transfer(frame_buffer[i][j]);
 		}
 	}

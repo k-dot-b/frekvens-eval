@@ -12,10 +12,10 @@ fadeObject demo_fade_image {0, 6, 0, false};
 * Direct frame data.
 * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
 */
-uint8_t g_frame[DIMC][COLB];
+uint8_t g_frame[FREKVENS_DIMC][FREKVENS_COLB];
 
 //DEPRECATED FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
-static void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
+static void refresh(uint8_t (*frame)[FREKVENS_COLB], uint8_t rows, uint8_t cols, uint8_t latch, uint8_t enable){
 	if (!(frame&&*frame))
 		return;
 	
@@ -39,7 +39,7 @@ static void refresh(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, uint8_t 
 }
 
 //DEPRECATED TEST FUNCTION FOR LEGACY DEMO ROUTINE (cluster stepper)
-static void fgen_cluster_picker(uint8_t (*frame)[COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data){
+static void fgen_cluster_picker(uint8_t (*frame)[FREKVENS_COLB], uint8_t rows, uint8_t cols, int segment, uint8_t data){
   if (!(frame&&*frame))
 		return;
 
@@ -69,12 +69,12 @@ void demo(uint8_t routine){
     //DEPRECATED test routine 1: cluster stepper - sequential
     case 1:
       for (int d=0;d<CLUSTER_MAX;d++){
-        fgen_cluster_picker(g_frame, DIMC, COLB, d, CLUSTER_DATA);
+        fgen_cluster_picker(g_frame, FREKVENS_DIMC, FREKVENS_COLB, d, CLUSTER_DATA);
 
         #ifdef VERBOSE_DEMO
         Serial.println("Cluster step frame:");
-        for(int i=0;i<DIMC;i++){
-          for(int j=0;j<COLB;j++){
+        for(int i=0;i<FREKVENS_DIMC;i++){
+          for(int j=0;j<FREKVENS_COLB;j++){
           Serial.print(g_frame[i][j]);
           Serial.print("		");
           }
@@ -82,7 +82,7 @@ void demo(uint8_t routine){
         }
         #endif
 
-        refresh(g_frame, DIMC, COLB, LATCH_PIN, OE_PIN);
+        refresh(g_frame, FREKVENS_DIMC, FREKVENS_COLB, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_1);
       }
       break;
@@ -91,8 +91,8 @@ void demo(uint8_t routine){
     //DEPRECATED test routine 2: mrefresh, pixel chase
     case 2:
       for (int d=0;d<PIXEL_MAX;d++){
-        fgen_pixel_picker(g_bitmap, DIMC, d);
-        mrefresh(g_bitmap, DIMC, 8, LATCH_PIN, OE_PIN);
+        fgen_pixel_picker(g_bitmap, FREKVENS_DIMC, d);
+        mrefresh(g_bitmap, FREKVENS_DIMC, 8, LATCH_PIN, OE_PIN);
         delay(STEP_DELAY_2);
       }
       break;
@@ -101,8 +101,8 @@ void demo(uint8_t routine){
     //test routine 3: mrefresh2, pixel chase -         left
     case 3:
       for (int d=PIXEL_MAX-1;d>=0;d--){
-        fgen_pixel_picker(g_bitmap, DIMC, d);
-        mrefresh2(g_bitmap, DIMC, 8);
+        fgen_pixel_picker(g_bitmap, FREKVENS_DIMC, d);
+        mrefresh2(g_bitmap, FREKVENS_DIMC, 8);
         delay(STEP_DELAY_2);
       }
       break;
@@ -111,8 +111,8 @@ void demo(uint8_t routine){
     //test routine 4: new SPI algorithm, pixel chase - right
     case 4:
       for (int d=0;d<PIXEL_MAX;d++){
-        fgen_pixel_picker(g_bitmap, DIMC, d);
-        FrekvensLoadBuffer(g_bitmap, DIMC);
+        fgen_pixel_picker(g_bitmap, FREKVENS_DIMC, d);
+        FrekvensLoadBuffer(g_bitmap, FREKVENS_DIMC);
         FrekvensRefreshDisplay();
         delay(STEP_DELAY_2);
       }
@@ -123,8 +123,8 @@ void demo(uint8_t routine){
     case 5:
       for (int d=0;d<PIXEL_MAX;d++){
         int cnt = 0;
-        for (uint8_t j=0;j<DIMC;j++){
-          for (uint8_t i=0;i<DIMC;i++){
+        for (uint8_t j=0;j<FREKVENS_DIMC;j++){
+          for (uint8_t i=0;i<FREKVENS_DIMC;i++){
             if (cnt==d)
               FrekvensLoadPixel(i, j, 255);
             else
@@ -142,8 +142,8 @@ void demo(uint8_t routine){
     case 6:
       for (int d=PIXEL_MAX-1;d>=0;d--){
         int cnt = 0;
-        for (uint8_t j=0;j<DIMC;j++){
-          for (uint8_t i=0;i<DIMC;i++){
+        for (uint8_t j=0;j<FREKVENS_DIMC;j++){
+          for (uint8_t i=0;i<FREKVENS_DIMC;i++){
             if (cnt==d)
               FrekvensLoadPixel(i, j, 255);
             else
@@ -162,8 +162,8 @@ void demo(uint8_t routine){
   }
 
   //Clear display
-  fgen_pixel_picker(g_bitmap, DIMC, 404);
-  mrefresh2(g_bitmap, DIMC, 8);
+  fgen_pixel_picker(g_bitmap, FREKVENS_DIMC, 404);
+  mrefresh2(g_bitmap, FREKVENS_DIMC, 8);
 
   Serial.println("Demo routine finished");
   // END OF DEMO ROUTINES
@@ -179,8 +179,8 @@ void multiDemo(){
 }
 
 void demoInterrupt(){
-  fgen_pixel_picker(g_bitmap, DIMC, id);
-  mrefresh2(g_bitmap, DIMC, 8);
+  fgen_pixel_picker(g_bitmap, FREKVENS_DIMC, id);
+  mrefresh2(g_bitmap, FREKVENS_DIMC, 8);
   if (id<255){
     id++;
     return;
@@ -191,8 +191,8 @@ void demoInterrupt(){
 void demoGrayscale(){
 
   //version: fullscreen image fade
-  for (int i=0;i<DIMC;i++){
-    for (int j=0;j<DIMC;j++){
+  for (int i=0;i<FREKVENS_DIMC;i++){
+    for (int j=0;j<FREKVENS_DIMC;j++){
       FrekvensLoadPixel(i, j, demo_fade_image.gray);
     }
   }
@@ -219,7 +219,7 @@ void demoGrayscale(){
   }
 }
 
-void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel){
+void fgen_pixel_picker(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t rows, int pixel){
   if (!(bitmap&&*bitmap))
 		return;
 

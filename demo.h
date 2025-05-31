@@ -43,7 +43,7 @@ extern fadeObject demo_fade_image;
   * Full frame bitmap
   * Defines a byte for each pixel for grayscale data (future use).
   */
-  extern uint8_t g_bitmap[DIMC][DIMC];
+  extern uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
   //Pin definitions
   extern const int LATCH_PIN;
@@ -79,6 +79,6 @@ void demoGrayscale();
 * bitmap:     byte array, 16x16
 * pixel:      The selected pixel in the bitmap array
 */
-void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel);
+void fgen_pixel_picker(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t rows, int pixel);
 
 #endif //_DEMO_H_INCLUDED

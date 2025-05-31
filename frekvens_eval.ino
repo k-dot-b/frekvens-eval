@@ -22,7 +22,7 @@
   * EXTERNAL VARIABLE
   * Frame bitmap array (from shift.h)
   */
-  extern uint8_t g_bitmap[DIMC][DIMC];
+  extern uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
 //-------------------------------------------
 // FUNCTION DECLARATIONS
