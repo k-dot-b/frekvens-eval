@@ -12,8 +12,8 @@
 //-------------------------------------------
 // CONSTANTS
 
-  const int LATCH_PIN = 8;  //Latch, falling edge triggered
-  const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
+const int LATCH_PIN = 8;  //Latch, falling edge triggered
+const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
 
 //-------------------------------------------
 // GLOBAL VARIABLES
@@ -62,24 +62,4 @@ void loop() {
 //-------------------------------------------
 // INTERRUPT SERVICE ROUTINES
 
-#if defined (__AVR_ATmega328P__)
-ISR(TIMER1_COMPA_vect){
 
-  FrekvensRefreshDisplay();
-
-  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
-      FrekvensBCM.iter_index--;
-  }
-  else {
-    if (FrekvensBCM.iter_index){
-      FrekvensBCM.iter_index--;
-      FrekvensBCM.bitmask_index--;
-    }
-    else {
-      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
-      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
-      frekvens_vsync_ready = true;                        //signal frame completion
-    }
-  }
-}
-#endif //__AVR_ATmega328P__

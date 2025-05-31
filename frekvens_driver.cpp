@@ -258,3 +258,29 @@ static inline void enableInterruptTimer(){
   sei();
   #endif //__AVR_ATmega328P__
 }
+
+//-------------------------------------------------------------
+// INTERRUPT SERVICE ROUTINES
+
+#if defined (__AVR_ATmega328P__)
+ISR(TIMER1_COMPA_vect){
+
+  FrekvensRefreshDisplay();
+
+  //BCM algorithm
+  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
+      FrekvensBCM.iter_index--;
+  }
+  else {
+    if (FrekvensBCM.iter_index){
+      FrekvensBCM.iter_index--;
+      FrekvensBCM.bitmask_index--;
+    }
+    else {
+      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
+      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
+      frekvens_vsync_ready = true;                          //signal frame completion
+    }
+  }
+}
+#endif //__AVR_ATmega328P__
