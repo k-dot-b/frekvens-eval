@@ -27,9 +27,6 @@ struct displayBCM {
   const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
 };
 
-
-extern uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
-
 extern volatile bool frekvens_vsync_ready;
 extern displayBCM FrekvensBCM;
 

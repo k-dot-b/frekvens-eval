@@ -1,18 +1,12 @@
 // frekvens_driver.cpp
 // Display driver for FREKVENS LED array
 
-#include "shift.h"
+#include "frekvens_driver.h"
 
 //SPISettings parameters
 #define FREKVENS_SRSPEED 2000000      //speedMaximum
 
 //GLOBAL VARIABLES
-
-/**
-* DEPRECATED GLOBAL VARIABLE
-* Frame bitmap array
-*/
-uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
 /**
 * GLOBAL FLAG

@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#include "shift.h"
+#include "frekvens_driver.h"
 
 //-------------------------------------------------
 // DEMO PARAMETERS
@@ -38,12 +38,6 @@ struct fadeObject {
 extern fadeObject demo_fade_image;
 
 // EXTERNAL VARIABLES
-
-  /**
-  * Full frame bitmap
-  * Defines a byte for each pixel for grayscale data (future use).
-  */
-  extern uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
   //Pin definitions
   extern const int LATCH_PIN;

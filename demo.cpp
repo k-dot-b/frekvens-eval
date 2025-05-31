@@ -9,6 +9,12 @@ fadeObject demo_fade_image {0, 6, 0, false};
 
 /**
 * DEPRECATED ARRAY
+* Frame bitmap array
+*/
+uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
+
+/**
+* DEPRECATED ARRAY
 * Direct frame data.
 * Pixels are represented by bits. The array can be transmitted directly to the LED drivers.
 */
