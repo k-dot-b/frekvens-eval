@@ -30,7 +30,7 @@ struct displayBCM {
 
 extern uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 
-extern volatile bool flag_frekvens_activity;
+extern volatile bool frekvens_vsync_ready;
 extern displayBCM FrekvensBCM;
 
 uint8_t debug_read_buffer(uint8_t row, uint8_t col);

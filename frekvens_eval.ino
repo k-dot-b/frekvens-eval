@@ -86,12 +86,12 @@ void setup() {
 
 void loop() {
 
-  if (flag_frekvens_activity){
+  if (frekvens_vsync_ready){
     //This segment will run after each complete frame draw
     //Update the frame buffer here to prevent screen tear
     demoGrayscale();
 
-    flag_frekvens_activity = false;
+    frekvens_vsync_ready = false;
   }
 
 
@@ -134,7 +134,7 @@ ISR(TIMER1_COMPA_vect){
     else {
       FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
       FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
-      flag_frekvens_activity = true;                        //signal frame completion
+      frekvens_vsync_ready = true;                        //signal frame completion
     }
   }
 }

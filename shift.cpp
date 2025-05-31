@@ -18,7 +18,7 @@ uint8_t g_bitmap[FREKVENS_DIMC][FREKVENS_DIMC];
 * GLOBAL FLAG
 * Activity indicator for synchronising display related operations
 */
-volatile bool flag_frekvens_activity = false;
+volatile bool frekvens_vsync_ready = false;
 
 /**
 * GLOBAL STRUCT
