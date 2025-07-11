@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#include "shift.h"
+#include "frekvens_driver.h"
 
 //-------------------------------------------------
 // DEMO PARAMETERS
@@ -28,13 +28,16 @@
 #define STEP_DELAY_1 240
 #define STEP_DELAY_2 30
 
-// EXTERNAL VARIABLES
+struct fadeObject {
+  volatile uint8_t gray;
+  uint8_t fade_prescaler;
+  volatile int fade_cntr;
+  volatile bool fade_reverse;
+};
 
-  /**
-  * Full frame bitmap
-  * Defines a byte for each pixel for grayscale data (future use).
-  */
-  extern uint8_t g_bitmap[DIMC][DIMC];
+extern fadeObject demo_fade_image;
+
+// EXTERNAL VARIABLES
 
   //Pin definitions
   extern const int LATCH_PIN;
@@ -59,12 +62,17 @@ void multiDemo();
 void demoInterrupt();
 
 /**
+* 
+*/
+void demoGrayscale();
+
+/**
 * TEST FUNCTION
 * Writes 1 to the selected byte, and fills the rest of the array with zeroes
 * 
 * bitmap:     byte array, 16x16
 * pixel:      The selected pixel in the bitmap array
 */
-void fgen_pixel_picker(uint8_t (*bitmap)[DIMC], uint8_t rows, int pixel);
+void fgen_pixel_picker(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t rows, int pixel);
 
 #endif //_DEMO_H_INCLUDED
