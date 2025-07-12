@@ -1,4 +1,10 @@
-// frekvens_driver.cpp
+/*
+ * Copyright 2025 Benedek Kiss
+ * Licensed under the EUPL
+ *
+ * frekvens_driver.cpp
+ */
+
 // Display driver for FREKVENS LED array
 
 #include "frekvens_driver.h"
@@ -17,12 +23,6 @@ volatile bool frekvens_vsync_ready = false;
 /**
 * GLOBAL STRUCT
 * Contains all global parameters for the Binary Code Modulation algorithm
-* 
-* .iter_max         Number of required iterations. Depends on bit depth.
-* .iter_index       Iteration counter.
-* .bitmask_max      Default index value. Depends on bit depth.
-* .bitmask_index    Frame mask selector. Default value of '8' disables masking.
-* .bitmask[9]       Constant array with binary masking values
 */
 struct displayBCM FrekvensBCM;
 

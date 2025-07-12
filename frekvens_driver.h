@@ -1,4 +1,10 @@
-// frekvens_driver.h
+/*
+ * Copyright 2025 Benedek Kiss
+ * Licensed under the EUPL
+ *
+ * frekvens_driver.h
+ */
+
 // Display driver for FREKVENS LED array
 
 #ifndef FREKVENS_DRIVER_H_INCLUDED
@@ -19,6 +25,15 @@
 //Grayscale image bit depth
 #define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
+/**
+* Contains all global parameters for the Binary Code Modulation algorithm
+* 
+* .iter_max         Number of required iterations. Calculated from bit depth: (2^(bit_depth)-1).
+* .iter_index       Iteration counter.
+* .bitmask_max      Default index value. Calculated from bit depth: ((bit_depth)-1).
+* .bitmask_index    Frame mask for current iteration.
+* .bitmask[9]       Constant array with binary masking values. Highest index disables masking.
+*/
 struct displayBCM {
   uint8_t iter_max = 0;
   volatile uint8_t iter_index = 0;
@@ -37,6 +52,8 @@ uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 *
 * latch_pin:    Latch pin number.
 * enable_pin:   Output Enable pin number.
+* 
+* return        true: success, false: failure
 */
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
 

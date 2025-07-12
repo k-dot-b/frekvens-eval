@@ -1,3 +1,10 @@
+/*
+ * Copyright 2025 Benedek Kiss
+ * Licensed under the EUPL
+ *
+ * demo.cpp
+ */
+
 #include "demo.h"
 
 uint8_t id = 0;

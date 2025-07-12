@@ -1,3 +1,10 @@
+/*
+ * Copyright 2025 Benedek Kiss
+ * Licensed under the EUPL
+ *
+ * demo.h
+ */
+
 /**
 * Quick and dirty test patterns for Frekvens
 */
