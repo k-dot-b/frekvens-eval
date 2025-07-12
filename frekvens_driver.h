@@ -29,7 +29,7 @@
 * .iter_index       Iteration counter.
 * .bitmask_max      Default index value. Calculated from bit depth: ((bit_depth)-1).
 * .bitmask_index    Frame mask for current iteration.
-* .bitmask[9]       Constant array with binary masking values. Highest index disables masking.
+* .bitmask[9]       Constant array with binary masking values. Highest index (8) disables masking.
 */
 struct displayBCM {
   uint8_t iter_max = 0;
@@ -42,7 +42,6 @@ struct displayBCM {
 extern volatile bool frekvens_vsync_ready;
 extern displayBCM FrekvensBCM;
 
-uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
 /**
 * Initialize the display.
@@ -74,6 +73,16 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension);
 * data:   The data to be loaded.
 */
 void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data);
+
+/**
+* Read data from the specified pixel of the display buffer.
+*
+* row:    Bitmap X coordinate.
+* col:    Bitmap Y coordinate.
+*
+* return  Pixel data.
+*/
+uint8_t FrekvensReadPixel(uint8_t row, uint8_t col);
 
 /**
 * Refresh the display with the buffered bitmap.
