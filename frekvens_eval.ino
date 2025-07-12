@@ -7,7 +7,8 @@
 //-------------------------------------------
 // MACROS
 
-
+//Grayscale image bit depth
+#define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
 //-------------------------------------------
 // CONSTANTS
@@ -28,11 +29,10 @@ const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
 //===========================================
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
-  if (!FrekvensAttachDisplay(LATCH_PIN, OE_PIN)){
+  if (FrekvensAttachDisplay(LATCH_PIN, OE_PIN, FREKVENS_GRAYSCALE_BIT_DEPTH)){
     Serial.println("Display initialization failed!");
-    Serial.println("Incorrect pin definitions");
     while(1){}
   }
   FrekvensEnableDisplayGrayscale();
