@@ -22,9 +22,6 @@
 //Display is (FREKVENS_COLB x 8) pixels wide
 #define FREKVENS_COLB 2
 
-//Grayscale image bit depth
-#define FREKVENS_GRAYSCALE_BIT_DEPTH 4
-
 /**
 * Contains all global parameters for the Binary Code Modulation algorithm
 * 
@@ -48,14 +45,18 @@ extern displayBCM FrekvensBCM;
 uint8_t debug_read_buffer(uint8_t row, uint8_t col);
 
 /**
-* Defines the physical connections to the display driver ICs
+* Initialize the display.
+* 
+* Define the physical connections to the display driver ICs.
+* Calculate parameters for the binary code modulation algorithm.
 *
 * latch_pin:    Latch pin number.
 * enable_pin:   Output Enable pin number.
+* bit_depth:    Bit depth of the grayscale image.
 * 
-* return        true: success, false: failure
+* return        EXIT_SUCCESS or EXIT_FAILURE
 */
-bool FrekvensAttachDisplay(int latch_pin, int enable_pin);
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth);
 
 /**
 * Load a complete bitmap into the display buffer

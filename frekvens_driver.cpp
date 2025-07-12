@@ -49,9 +49,12 @@ uint8_t debug_read_buffer(uint8_t row, uint8_t col){
   return i_bitmap_buffer[row][col];
 }
 
-bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
+bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
   if (latch_pin==enable_pin)
-    return false;
+    return EXIT_FAILURE;
+
+  if (bit_depth<1 || bit_depth>8)
+    return EXIT_FAILURE;
 
   SPI.begin();
   displayPins.latch = latch_pin;
@@ -64,16 +67,16 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin){
   digitalWrite(enable_pin, LOW);  //Enable display
 
   //Grayscale parameters
-  for (uint8_t i=1;i<FREKVENS_GRAYSCALE_BIT_DEPTH;i++){
+  for (uint8_t i=1;i<bit_depth;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     FrekvensBCM.iter_max |= 1<<i;
   }
   FrekvensBCM.iter_index = FrekvensBCM.iter_max;
-  FrekvensBCM.bitmask_max = FREKVENS_GRAYSCALE_BIT_DEPTH - 1;
+  FrekvensBCM.bitmask_max = bit_depth - 1;
 
   configureInterruptTimer();
 
-  return true;
+  return EXIT_SUCCESS;
 }
 
 void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension){
