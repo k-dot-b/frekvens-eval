@@ -74,6 +74,7 @@ uint8_t FrekvensReadPixel(uint8_t row, uint8_t col);
 void FrekvensRefreshDisplay();
 
 /**
+* DEPRECATED FUNCTION!
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI
 *
 * *bitmap:    Byte array that contains the image.
@@ -85,6 +86,7 @@ void FrekvensRefreshDisplay();
 void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask, uint8_t latch, uint8_t enable);
 
 /**
+* DEPRECATED FUNCTION!
 * New version of mrefresh() using internal sources for display parameters.
 * Compiles the frame from the bitmap and transmits it to the LED drivers via SPI.
 * "map-and-refresh"
@@ -96,7 +98,7 @@ void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask,
 void mrefresh2(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask);
 
 /**
-* Preload BCM parameters.
+* Enable the display in BCM mode.
 * WARNING! BCM is interrupt dependent!
 * Timer interrupt must be configured separately.
 */

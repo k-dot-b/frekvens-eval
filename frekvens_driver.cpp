@@ -22,12 +22,18 @@ volatile bool frekvens_vsync_ready = false;
 
 //LIMITED SCOPE VARIABLES
 
+/**
+* Physical pin assignments for the LED driver IC control inputs.
+* Values are loaded by the 'FrekvensAttachDisplay' function.
+*/
 struct displayPhy {
   int latch = 0;
   int enable = 0;
 } displayPins;  //Display control pins
 
-/* displayBCM: parameters for the Binary Code Modulation algorithm.
+/**
+*  Parameters for the Binary Code Modulation algorithm.
+*
 * .iter_max         Number of required iterations. Depends on bit depth.
 * .iter_index       Iteration counter.
 * .bitmask_max      Default index value. Depends on bit depth.
