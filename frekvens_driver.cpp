@@ -20,18 +20,27 @@
 */
 volatile bool frekvens_vsync_ready = false;
 
-/**
-* GLOBAL STRUCT
-* Contains all global parameters for the Binary Code Modulation algorithm
-*/
-struct displayBCM FrekvensBCM;
-
 //LIMITED SCOPE VARIABLES
 
 struct displayPhy {
   int latch = 0;
   int enable = 0;
 } displayPins;  //Display control pins
+
+/* displayBCM: parameters for the Binary Code Modulation algorithm.
+* .iter_max         Number of required iterations. Depends on bit depth.
+* .iter_index       Iteration counter.
+* .bitmask_max      Default index value. Depends on bit depth.
+* .bitmask_index    Frame mask selector. Default value of '8' disables masking.
+* .bitmask[9]       Constant array with binary masking values
+*/
+struct displayBCM {
+  uint8_t iter_max = 0;
+  volatile uint8_t iter_index = 0;
+  uint8_t bitmask_max = 0;
+  volatile uint8_t bitmask_index = 8;
+  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
+} FrekvensBCM;
 
 uint8_t i_bitmap_buffer[FREKVENS_DIMC][FREKVENS_DIMC];
 
@@ -90,7 +99,7 @@ void FrekvensLoadPixel(uint8_t row, uint8_t col, uint8_t data){
 uint8_t FrekvensReadPixel(uint8_t row, uint8_t col){
   if (row>FREKVENS_DIMC || col>FREKVENS_DIMC)
     return 0;
-  
+
   return i_bitmap_buffer[row][col];
 }
 
@@ -128,7 +137,7 @@ void mrefresh(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask,
 		return;
   if (dimension!=FREKVENS_DIMC)
     return;
-	
+
   //Compile a frame from the bitmap
   uint8_t frame_buffer[FREKVENS_DIMC][FREKVENS_COLB];
   for (int i=0;i<dimension;i++){
@@ -163,7 +172,7 @@ void mrefresh2(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension, uint8_t mask
 		return;
   if (dimension!=FREKVENS_DIMC)
     return;
-	
+
   //Compile a frame from the bitmap
   uint8_t frame_buffer[FREKVENS_DIMC][FREKVENS_COLB];
   for (int i=0;i<dimension;i++){
@@ -225,7 +234,7 @@ static inline void configureInterruptTimer(){
   #if defined (__AVR_ATmega328P__)
   /*
   * Arduino Uno timer1
-  * 
+  *
   * frequency | CSx2-1-0  | OCR
   * 1600 Hz   | 0-1-0     | 1249
   */

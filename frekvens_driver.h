@@ -22,44 +22,27 @@
 //Display is (FREKVENS_COLB x 8) pixels wide
 #define FREKVENS_COLB 2
 
-/**
-* Contains all global parameters for the Binary Code Modulation algorithm
-* 
-* .iter_max         Number of required iterations. Calculated from bit depth: (2^(bit_depth)-1).
-* .iter_index       Iteration counter.
-* .bitmask_max      Default index value. Calculated from bit depth: ((bit_depth)-1).
-* .bitmask_index    Frame mask for current iteration.
-* .bitmask[9]       Constant array with binary masking values. Highest index (8) disables masking.
-*/
-struct displayBCM {
-  uint8_t iter_max = 0;
-  volatile uint8_t iter_index = 0;
-  uint8_t bitmask_max = 0;
-  volatile uint8_t bitmask_index = 8;
-  const uint8_t bitmask[9] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0xff};
-};
 
 extern volatile bool frekvens_vsync_ready;
-extern displayBCM FrekvensBCM;
 
 
 /**
 * Initialize the display.
-* 
+*
 * Define the physical connections to the display driver ICs.
 * Calculate parameters for the binary code modulation algorithm.
 *
 * latch_pin:    Latch pin number.
 * enable_pin:   Output Enable pin number.
 * bit_depth:    Bit depth of the grayscale image.
-* 
+*
 * return        EXIT_SUCCESS or EXIT_FAILURE
 */
 bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth);
 
 /**
 * Load a complete bitmap into the display buffer
-* 
+*
 * *bitmap:    Byte array that contains the image.
 * dimension:  Dimension of bitmap (square matrix).
 */
@@ -67,7 +50,7 @@ void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension);
 
 /**
 * Load data to the specified pixel of the display buffer.
-* 
+*
 * row:    Bitmap X coordinate.
 * col:    Bitmap Y coordinate.
 * data:   The data to be loaded.
@@ -121,7 +104,7 @@ void FrekvensEnableDisplayGrayscale();
 
 /**
 * Enable the display with global PWM dimming via the Output Enable pin.
-* 
+*
 * dimness:    Dimness value (0-255). Higher number means darker display.
 */
 void FrekvensEnableDisplayDimming(uint8_t dimness);
