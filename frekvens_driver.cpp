@@ -55,27 +55,23 @@ static inline void configureInterruptTimer();
 static inline void disableInterruptTimer();
 static inline void enableInterruptTimer();
 
-//-------------------------------------------------------------
-// Frekvens Driver function definitions
+/**
+* Initialize the necessary components for the BCM algorithm.
+* 
+* bit_depth:    Bit depth of the grayscale image.
+*
+* return        FREKVENS_STATUS_SUCCESS or FREKVENS_STATUS_FAILURE
+*/
+static uint8_t FrekvensConfigureBCM(int bit_depth){
+  if (bit_depth<1 || bit_depth>8){
+    return FREKVENS_STATUS_FAILURE;
+  }
 
-bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
-  if (latch_pin==enable_pin)
-    return EXIT_FAILURE;
+  if (bit_depth == FREKVENS_GRAYSCALE_OFF){
+    return FREKVENS_STATUS_SUCCESS;
+  }
 
-  if (bit_depth<1 || bit_depth>8)
-    return EXIT_FAILURE;
-
-  SPI.begin();
-  displayPins.latch = latch_pin;
-  displayPins.enable = enable_pin;
-
-  pinMode(latch_pin, OUTPUT);
-  pinMode(enable_pin, OUTPUT);
-
-  digitalWrite(latch_pin, LOW);
-  digitalWrite(enable_pin, LOW);  //Enable display
-
-  //Grayscale parameters
+  //Calculate grayscale parameters
   for (uint8_t i=1;i<bit_depth;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     FrekvensBCM.iter_max |= 1<<i;
@@ -85,7 +81,30 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
 
   configureInterruptTimer();
 
-  return EXIT_SUCCESS;
+  return FREKVENS_STATUS_SUCCESS;
+}
+
+uint8_t FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
+  if (latch_pin==enable_pin){
+    return FREKVENS_STATUS_FAILURE;
+  }
+
+  if (FrekvensConfigureBCM(bit_depth)){
+    return FREKVENS_STATUS_FAILURE;
+  }
+
+  SPI.begin();
+  
+  displayPins.latch = latch_pin;
+  displayPins.enable = enable_pin;
+
+  pinMode(latch_pin, OUTPUT);
+  pinMode(enable_pin, OUTPUT);
+
+  digitalWrite(latch_pin, LOW);
+  digitalWrite(enable_pin, LOW);  //Enable display
+
+  return FREKVENS_STATUS_SUCCESS;
 }
 
 void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension){

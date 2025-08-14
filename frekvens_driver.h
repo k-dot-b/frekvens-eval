@@ -15,12 +15,24 @@
 #include <SPI.h>
 #endif
 
+#define FREKVENS_STATUS_SUCCESS 0
+#define FREKVENS_STATUS_FAILURE 1
+
 //Common dimension of display related arrays (rows and columns)
 //Display is square with (FREKVENS_DIMC) pixels on all sides
 #define FREKVENS_DIMC 16
 //Column count of the frame buffer array
 //Display is (FREKVENS_COLB x 8) pixels wide
 #define FREKVENS_COLB 2
+
+#define FREKVENS_GRAYSCALE_OFF    1
+#define FREKVENS_GRAYSCALE_2BITS  2
+#define FREKVENS_GRAYSCALE_3BITS  3
+#define FREKVENS_GRAYSCALE_4BITS  4
+#define FREKVENS_GRAYSCALE_5BITS  5
+#define FREKVENS_GRAYSCALE_6BITS  6
+#define FREKVENS_GRAYSCALE_7BITS  7
+#define FREKVENS_GRAYSCALE_8BITS  8
 
 
 extern volatile bool frekvens_vsync_ready;
@@ -36,9 +48,9 @@ extern volatile bool frekvens_vsync_ready;
 * enable_pin:   Output Enable pin number.
 * bit_depth:    Bit depth of the grayscale image.
 *
-* return        EXIT_SUCCESS or EXIT_FAILURE
+* return        FREKVENS_STATUS_SUCCESS or FREKVENS_STATUS_FAILURE
 */
-bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth);
+uint8_t FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth);
 
 /**
 * Load a complete bitmap into the display buffer
