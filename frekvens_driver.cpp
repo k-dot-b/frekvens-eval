@@ -1,6 +1,6 @@
 /*
  * Copyright 2025 Benedek Kiss
- * Licensed under the EUPL
+ * Licensed under the EUPL-1.2 or later
  *
  * frekvens_driver.cpp
  */
@@ -87,8 +87,8 @@ static uint8_t FrekvensConfigureBCM(int bit_depth){
 /**
 * BCM algorithm for displaying grayscale images.
 * 
-* This function updates the mask used on the pixel values.
-* Each mask is used for a number of ticks according to their bit weight.
+* BCM (Binary Code Modulation) subframes are generated from the frame buffer by applying a bitmask.
+* Each mask is active for a number of ticks according to their bit weight.
 */
 static inline void FrekvensRefreshBCM(){
   //BCM algorithm
@@ -278,6 +278,12 @@ void FrekvensDisableDisplay(){
 //-------------------------------------------------------------
 // HARDWARE SPECIFIC FUNCTIONS
 
+/**
+* Configure the timer peripheral driving the BCM algorithm.
+* 
+* This function contains code for all supported microcontrollers.
+* Required timer interrupt frequency: 1600 Hz
+*/
 static inline void configureInterruptTimer(){
   //-----------------------------------------------------------
   #if defined (__AVR_ATmega328P__)
