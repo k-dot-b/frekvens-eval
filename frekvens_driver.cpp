@@ -84,6 +84,30 @@ static uint8_t FrekvensConfigureBCM(int bit_depth){
   return FREKVENS_STATUS_SUCCESS;
 }
 
+/**
+* BCM algorithm for displaying grayscale images.
+* 
+* This function updates the mask used on the pixel values.
+* Each mask is used for a number of ticks according to their bit weight.
+*/
+static inline void FrekvensRefreshBCM(){
+  //BCM algorithm
+  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
+      FrekvensBCM.iter_index--;
+  }
+  else {
+    if (FrekvensBCM.iter_index){
+      FrekvensBCM.iter_index--;
+      FrekvensBCM.bitmask_index--;
+    }
+    else {
+      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
+      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
+      frekvens_vsync_ready = true;                          //signal frame completion
+    }
+  }
+}
+
 uint8_t FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
   if (latch_pin==enable_pin){
     return FREKVENS_STATUS_FAILURE;
@@ -304,21 +328,6 @@ static inline void enableInterruptTimer(){
 ISR(TIMER1_COMPA_vect){
 
   FrekvensRefreshDisplay();
-
-  //BCM algorithm
-  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
-      FrekvensBCM.iter_index--;
-  }
-  else {
-    if (FrekvensBCM.iter_index){
-      FrekvensBCM.iter_index--;
-      FrekvensBCM.bitmask_index--;
-    }
-    else {
-      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
-      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
-      frekvens_vsync_ready = true;                          //signal frame completion
-    }
-  }
+  FrekvensRefreshBCM();
 }
 #endif //__AVR_ATmega328P__
