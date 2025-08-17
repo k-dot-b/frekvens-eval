@@ -56,6 +56,21 @@ static inline void disableInterruptTimer();
 static inline void enableInterruptTimer();
 
 /**
+* Wrapper for SPI initialization.
+*/
+static uint8_t FrekvensInitializeSPI(){
+  uint8_t retVal = FREKVENS_STATUS_FAILURE
+
+#ifdef _SPI_H_INCLUDED
+  //Arduino SPI library available
+  SPI.begin();
+  retVal = FREKVENS_STATUS_SUCCESS
+#endif //_SPI_H_INCLUDED
+
+  return retVal;
+}
+
+/**
 * Initialize the necessary components for the BCM algorithm.
 * 
 * bit_depth:    Bit depth of the grayscale image.
@@ -117,7 +132,9 @@ uint8_t FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
     return FREKVENS_STATUS_FAILURE;
   }
 
-  SPI.begin();
+  if (FrekvensInitializeSPI()){
+    return FREKVENS_STATUS_FAILURE;
+  }
   
   displayPins.latch = latch_pin;
   displayPins.enable = enable_pin;
@@ -279,7 +296,7 @@ void FrekvensDisableDisplay(){
 // HARDWARE SPECIFIC FUNCTIONS
 
 /**
-* Configure the timer peripheral driving the BCM algorithm.
+* Configure the timer peripheral for driving the BCM algorithm.
 * 
 * This function contains code for all supported microcontrollers.
 * Required timer interrupt frequency: 1600 Hz
