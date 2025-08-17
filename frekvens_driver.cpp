@@ -1,6 +1,6 @@
 /*
  * Copyright 2025 Benedek Kiss
- * Licensed under the EUPL
+ * Licensed under the EUPL-1.2 or later
  *
  * frekvens_driver.cpp
  */
@@ -55,27 +55,38 @@ static inline void configureInterruptTimer();
 static inline void disableInterruptTimer();
 static inline void enableInterruptTimer();
 
-//-------------------------------------------------------------
-// Frekvens Driver function definitions
+/**
+* Wrapper for SPI initialization.
+*/
+static uint8_t FrekvensInitializeSPI(){
+  uint8_t retVal = FREKVENS_STATUS_FAILURE;
 
-bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
-  if (latch_pin==enable_pin)
-    return EXIT_FAILURE;
-
-  if (bit_depth<1 || bit_depth>8)
-    return EXIT_FAILURE;
-
+#ifdef _SPI_H_INCLUDED
+  //Arduino SPI library available
   SPI.begin();
-  displayPins.latch = latch_pin;
-  displayPins.enable = enable_pin;
+  retVal = FREKVENS_STATUS_SUCCESS;
+#endif //_SPI_H_INCLUDED
 
-  pinMode(latch_pin, OUTPUT);
-  pinMode(enable_pin, OUTPUT);
+  return retVal;
+}
 
-  digitalWrite(latch_pin, LOW);
-  digitalWrite(enable_pin, LOW);  //Enable display
+/**
+* Initialize the necessary components for the BCM algorithm.
+* 
+* bit_depth:    Bit depth of the grayscale image.
+*
+* return        FREKVENS_STATUS_SUCCESS or FREKVENS_STATUS_FAILURE
+*/
+static uint8_t FrekvensConfigureBCM(int bit_depth){
+  if (bit_depth<1 || bit_depth>8){
+    return FREKVENS_STATUS_FAILURE;
+  }
 
-  //Grayscale parameters
+  if (bit_depth == FREKVENS_GRAYSCALE_OFF){
+    return FREKVENS_STATUS_SUCCESS;
+  }
+
+  //Calculate grayscale parameters
   for (uint8_t i=1;i<bit_depth;i++){
     //calculate 2^(bit_depth)-1 which will be the number of required subframes for BCM
     FrekvensBCM.iter_max |= 1<<i;
@@ -85,7 +96,56 @@ bool FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
 
   configureInterruptTimer();
 
-  return EXIT_SUCCESS;
+  return FREKVENS_STATUS_SUCCESS;
+}
+
+/**
+* BCM algorithm for displaying grayscale images.
+* 
+* BCM (Binary Code Modulation) subframes are generated from the frame buffer by applying a bitmask.
+* Each mask is active for a number of ticks according to their bit weight.
+*/
+static inline void FrekvensRefreshBCM(){
+  //BCM algorithm
+  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
+      FrekvensBCM.iter_index--;
+  }
+  else {
+    if (FrekvensBCM.iter_index){
+      FrekvensBCM.iter_index--;
+      FrekvensBCM.bitmask_index--;
+    }
+    else {
+      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
+      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
+      frekvens_vsync_ready = true;                          //signal frame completion
+    }
+  }
+}
+
+uint8_t FrekvensAttachDisplay(int latch_pin, int enable_pin, int bit_depth){
+  if (latch_pin==enable_pin){
+    return FREKVENS_STATUS_FAILURE;
+  }
+
+  if (FrekvensConfigureBCM(bit_depth)){
+    return FREKVENS_STATUS_FAILURE;
+  }
+
+  if (FrekvensInitializeSPI()){
+    return FREKVENS_STATUS_FAILURE;
+  }
+  
+  displayPins.latch = latch_pin;
+  displayPins.enable = enable_pin;
+
+  pinMode(latch_pin, OUTPUT);
+  pinMode(enable_pin, OUTPUT);
+
+  digitalWrite(latch_pin, LOW);
+  digitalWrite(enable_pin, LOW);  //Enable display
+
+  return FREKVENS_STATUS_SUCCESS;
 }
 
 void FrekvensLoadBuffer(uint8_t (*bitmap)[FREKVENS_DIMC], uint8_t dimension){
@@ -235,6 +295,12 @@ void FrekvensDisableDisplay(){
 //-------------------------------------------------------------
 // HARDWARE SPECIFIC FUNCTIONS
 
+/**
+* Configure the timer peripheral for driving the BCM algorithm.
+* 
+* This function contains code for all supported microcontrollers.
+* Required timer interrupt frequency: 1600 Hz
+*/
 static inline void configureInterruptTimer(){
   //-----------------------------------------------------------
   #if defined (__AVR_ATmega328P__)
@@ -285,21 +351,6 @@ static inline void enableInterruptTimer(){
 ISR(TIMER1_COMPA_vect){
 
   FrekvensRefreshDisplay();
-
-  //BCM algorithm
-  if ((FrekvensBCM.iter_index & FrekvensBCM.bitmask[FrekvensBCM.bitmask_index])){
-      FrekvensBCM.iter_index--;
-  }
-  else {
-    if (FrekvensBCM.iter_index){
-      FrekvensBCM.iter_index--;
-      FrekvensBCM.bitmask_index--;
-    }
-    else {
-      FrekvensBCM.iter_index = FrekvensBCM.iter_max;        //reload counter
-      FrekvensBCM.bitmask_index = FrekvensBCM.bitmask_max;  //reload bitmask
-      frekvens_vsync_ready = true;                          //signal frame completion
-    }
-  }
+  FrekvensRefreshBCM();
 }
 #endif //__AVR_ATmega328P__

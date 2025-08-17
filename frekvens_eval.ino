@@ -7,8 +7,6 @@
 //-------------------------------------------
 // MACROS
 
-//Grayscale image bit depth
-#define FREKVENS_GRAYSCALE_BIT_DEPTH 4
 
 //-------------------------------------------
 // CONSTANTS
@@ -31,7 +29,7 @@ const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
 void setup() {
   Serial.begin(9600);
 
-  if (FrekvensAttachDisplay(LATCH_PIN, OE_PIN, FREKVENS_GRAYSCALE_BIT_DEPTH)){
+  if (FrekvensAttachDisplay(LATCH_PIN, OE_PIN, FREKVENS_GRAYSCALE_4BITS)){
     Serial.println("Display initialization failed!");
     while(1){}
   }
@@ -46,7 +44,9 @@ void loop() {
   if (frekvens_vsync_ready){
     //This segment will run after each complete frame draw
     //Update the frame buffer here to prevent screen tear
+    #ifdef _DEMO_H_INCLUDED
     demoGrayscale();
+    #endif //_DEMO_H_INCLUDED
 
     frekvens_vsync_ready = false;
   }

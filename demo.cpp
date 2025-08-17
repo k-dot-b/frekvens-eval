@@ -1,6 +1,6 @@
 /*
  * Copyright 2025 Benedek Kiss
- * Licensed under the EUPL
+ * Licensed under the EUPL-1.2 or later
  *
  * demo.cpp
  */
