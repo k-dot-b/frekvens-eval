@@ -59,12 +59,12 @@ static inline void enableInterruptTimer();
 * Wrapper for SPI initialization.
 */
 static uint8_t FrekvensInitializeSPI(){
-  uint8_t retVal = FREKVENS_STATUS_FAILURE
+  uint8_t retVal = FREKVENS_STATUS_FAILURE;
 
 #ifdef _SPI_H_INCLUDED
   //Arduino SPI library available
   SPI.begin();
-  retVal = FREKVENS_STATUS_SUCCESS
+  retVal = FREKVENS_STATUS_SUCCESS;
 #endif //_SPI_H_INCLUDED
 
   return retVal;
