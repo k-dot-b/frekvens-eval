@@ -18,6 +18,25 @@
   const int LATCH_PIN = 8;  //Latch, falling edge triggered
   const int OE_PIN = 9;     //Output Enable, ACTIVE LOW
 
+  static uint8_t frame_01[16][16] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+  };
+
 //-------------------------------------------
 // GLOBAL VARIABLES
 
@@ -46,6 +65,44 @@ static inline void enableInterruptOC1A();
 #endif //__AVR_ATmega328P__
 
 //===========================================
+
+// first input value is the size of display (16x16), 
+// second is width of the lowest point of the tree
+void generateTree(int borderSize) {
+    int centerX = borderSize / 2;
+    
+    // Clear the array first
+    for(int i = 0; i < borderSize; i++) {
+        for(int j = 0; j < borderSize; j++) {
+            frame_01[i][j] = 0;
+        }
+    }
+
+    // Number of triangle tiers (e.g., 3 tiers: small, medium, large)
+    int numTiers = 3; 
+    int currentY = 0;
+
+    for (int t = 1; t <= numTiers; t++) {
+        // Calculate the height of this specific tier
+        int tierHeight = (borderSize / numTiers) + t; 
+        
+        for (int y = 0; y < tierHeight && currentY < borderSize; y++) {
+            // Calculate how wide the row should be at this vertical point
+            // This creates the "triangle" slope
+            int rowWidth = y + t; 
+            
+            for (int x = centerX - rowWidth; x <= centerX + rowWidth; x++) {
+                if (x >= 0 && x < borderSize) {
+                    frame_01[currentY][x] = 1;
+                }
+            }
+            currentY++;
+        }
+    }
+}
+
+//=============
+
 
 void setup() {
   //-----------------------------------------------------------
@@ -93,6 +150,10 @@ void setup() {
   enableInterruptOC1A();
 
   randomSeed(analogRead(A2));
+
+  //FrekvensLoadBuffer(frame_01, 16);
+  generateTree(16);
+
 }
 
 //===========================================
@@ -119,7 +180,7 @@ void loop() {
         else if (i==ri2 && j==rj2)
           FrekvensLoadPixel(i, j, gray2);
         else
-          FrekvensLoadPixel(i, j, 0);
+          FrekvensLoadPixel(i, j, frame_01[i][j]);
       }
     }
 
